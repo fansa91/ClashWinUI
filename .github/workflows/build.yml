@@ -1,0 +1,61 @@
+name: Build
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+env:
+  MIHOMO_VERSION: v1.19.34
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - variant: self-contained
+            selfContained: true
+          - variant: framework-dependent
+            selfContained: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Fetch mihomo core and Country.mmdb
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path native | Out-Null
+          $zip = Join-Path $env:RUNNER_TEMP 'mihomo.zip'
+          Invoke-WebRequest -Uri "https://github.com/MetaCubeX/mihomo/releases/download/$env:MIHOMO_VERSION/mihomo-windows-amd64-$env:MIHOMO_VERSION.zip" -OutFile $zip
+          $ext = Join-Path $env:RUNNER_TEMP 'mihomo'
+          Expand-Archive -Path $zip -DestinationPath $ext -Force
+          $exe = Get-ChildItem -Path $ext -Recurse -Filter '*.exe' | Select-Object -First 1
+          Move-Item -Path $exe.FullName -Destination native/mihomo.exe -Force
+          $wintun = Get-ChildItem -Path $ext -Recurse -Filter 'wintun.dll' | Select-Object -First 1
+          if ($wintun) { Move-Item -Path $wintun.FullName -Destination native/wintun.dll -Force }
+          Invoke-WebRequest -Uri 'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb' -OutFile native/Country.mmdb
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          $publishArgs = @('publish', 'src/ClashWinUI/ClashWinUI.csproj', '-c', 'Release', '-r', 'win-x64', '-p:SelfContained=${{ matrix.selfContained }}', '-o', 'publish')
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $publishArgs += "-p:Version=$($env:GITHUB_REF.Substring('refs/tags/v'.Length))"
+          }
+          dotnet @publishArgs
+
+      - name: Pack artifact
+        shell: pwsh
+        run: Compress-Archive -Path publish/* -DestinationPath "ClashWinUI-${{ matrix.variant }}-win-x64.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ClashWinUI-${{ matrix.variant }}-win-x64
+          path: ClashWinUI-${{ matrix.variant }}-win-x64.zip

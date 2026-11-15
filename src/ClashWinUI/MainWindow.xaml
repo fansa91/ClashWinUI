@@ -1,0 +1,85 @@
+<Window
+    x:Class="ClashDotNetFramework.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <NavigationView x:Name="NavView"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        OpenPaneLength="250"
+                        SelectionChanged="NavView_SelectionChanged">
+            <NavigationView.PaneHeader>
+                <TextBlock Text="Clash .NET Framework"
+                           FontSize="18" FontWeight="SemiBold"
+                           Margin="12,8" />
+            </NavigationView.PaneHeader>
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem Tag="Overview" Content="{Binding [Overview]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Home" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Proxies" Content="{Binding [Proxies]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="World" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Profiles" Content="{Binding [Profiles]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Document" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Rules" Content="{Binding [Rules]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="List" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Logs" Content="{Binding [Logs]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Message" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Connections" Content="{Binding [Connections]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Link" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Settings" Content="{Binding [Settings]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Setting" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="Support" Content="{Binding [Support]}">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Help" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.PaneFooter>
+                <StackPanel Padding="16,12" Spacing="10">
+                    <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" Margin="0,0,0,2" />
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Text="↑" Foreground="DeepSkyBlue" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock x:Name="UploadSpeed" Grid.Column="1" Text="0.00 B/s" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Text="↓" Foreground="MediumSeaGreen" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock x:Name="DownloadSpeed" Grid.Column="1" Text="0.00 B/s" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </Grid>
+                    <TextBlock x:Name="ConnectionTime" Text="00 : 00 : 00" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Ellipse x:Name="StatusLight" Width="10" Height="10" Fill="Red" VerticalAlignment="Center" />
+                        <TextBlock x:Name="StatusText" Text="Disconnected" FontSize="13" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock x:Name="CoreVersionText" Text="Core Version: Unknown" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+            </NavigationView.PaneFooter>
+
+            <Frame x:Name="PageFrame" />
+        </NavigationView>
+    </Grid>
+</Window>

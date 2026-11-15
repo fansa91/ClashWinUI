@@ -1,0 +1,57 @@
+<Page
+    x:Class="ClashDotNetFramework.Pages.ProxiesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Loaded="Page_Loaded">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding [Proxies]}" FontSize="28" FontWeight="SemiBold" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12" Margin="0,16">
+            <RadioButton x:Name="DirectButton" GroupName="Mode" Content="{Binding [Direct]}" Checked="DirectButton_Checked" />
+            <RadioButton x:Name="RuleButton" GroupName="Mode" Content="{Binding [Rule]}" Checked="RuleButton_Checked" />
+            <RadioButton x:Name="GlobalButton" GroupName="Mode" Content="{Binding [Global]}" Checked="GlobalButton_Checked" />
+        </StackPanel>
+
+        <ListView x:Name="ProxyListView"
+                  Grid.Row="2"
+                  SelectionMode="Single"
+                  SelectionChanged="ProxyListView_SelectionChanged">
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="16" Margin="0,8" />
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Background="{Binding IsSelected, Converter={StaticResource SelectedToBackground}}"
+                          Padding="10,8" CornerRadius="6" Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="1" Text="{Binding Type}" Opacity="0.7" VerticalAlignment="Center" Margin="12,0" />
+                        <Button Grid.Column="2"
+                                Content="{Binding Latency, Converter={StaticResource LatencyToText}}"
+                                Foreground="{Binding Latency, Converter={StaticResource LatencyToColor}}"
+                                Tag="{Binding Name}"
+                                Click="TestButton_Click"
+                                MinWidth="90" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

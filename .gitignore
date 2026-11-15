@@ -1,0 +1,8 @@
+[Bb]in/
+[Oo]bj/
+publish/
+.vs/
+*.user
+native/mihomo.exe
+native/Country.mmdb
+native/wintun.dll
