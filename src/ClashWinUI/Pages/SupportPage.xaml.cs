@@ -14,6 +14,9 @@ namespace ClashDotNetFramework.Pages
 {
     public sealed partial class SupportPage : Page
     {
+        /// <summary>本地化字符串表，供 x:Bind 编译期绑定使用</summary>
+        public Localization Loc => Localization.Instance;
+
         public SupportPage()
         {
             InitializeComponent();
@@ -48,6 +51,10 @@ namespace ClashDotNetFramework.Pages
                             MinorAdvertisement.Tag = response.Airports[1].Url;
                             MinorAdvertisement.Visibility = Visibility.Visible;
                         }
+                        // 只有确实有内容时才显示"广告"这一整块
+                        AdvertisementPanel.Visibility = response.Airports.Count > 0
+                            ? Visibility.Visible
+                            : Visibility.Collapsed;
                     });
                 }
             }
@@ -68,6 +75,13 @@ namespace ClashDotNetFramework.Pages
                 {
                 }
             }
+        }
+
+        /// <summary>
+        /// 语言切换后刷新由代码写入的文案。本页文案全部由 x:Bind 管理，这里保留空实现以统一接口。
+        /// </summary>
+        public void RefreshLocalizedText()
+        {
         }
     }
 }

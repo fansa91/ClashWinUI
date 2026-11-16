@@ -1,6 +1,7 @@
 using Clash.SDK;
 using Clash.SDK.Models.Events;
 using ClashDotNetFramework.Controllers;
+using ClashDotNetFramework.Models.Converters;
 using ClashDotNetFramework.Models.Enums;
 using ClashDotNetFramework.Utils;
 using Microsoft.UI.Xaml;
@@ -18,14 +19,28 @@ namespace ClashDotNetFramework
     {
         private readonly DispatcherTimer _connectionTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.5) };
         private DateTime _beginStamp = DateTime.MinValue;
+        private bool _suppressSelection;
+        private bool _isConnected = true;
+        private string _coreVersion;
+
+        /// <summary>
+        /// 本地化字符串表，供 x:Bind 使用
+        /// </summary>
+        public Localization Loc => Localization.Instance;
 
         public MainWindow()
         {
             InitializeComponent();
-            RootGrid.DataContext = Localization.Instance;
+
+            // Windows 11 原生材质 + 沉浸式标题栏
+            SystemBackdrop = new MicaBackdrop();
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(NavView);
 
             Title = $"Clash .NET Framework v{UpdateChecker.Version}";
-            AppWindow.Resize(new Windows.Graphics.SizeInt32(1000, 750));
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(1180, 800));
+            // 窗口再窄会让设置页的标签列被压成 0 宽（只剩无说明的开关），这里兜住最小可用尺寸
+            WindowSizing.ApplyMinimumSize(this, 940, 600);
 
             Global.Pages.Init();
             InitClash();
@@ -39,7 +54,10 @@ namespace ClashDotNetFramework
 
         public void ApplyTheme(ThemeType theme)
         {
-            RootGrid.RequestedTheme = theme == ThemeType.Dark ? ElementTheme.Dark : ElementTheme.Light;
+            bool dark = theme == ThemeType.Dark;
+            Global.IsDarkTheme = dark;
+            RootGrid.RequestedTheme = dark ? ElementTheme.Dark : ElementTheme.Light;
+            Global.Pages?.RefreshSemanticColors();
         }
 
         public void InitEvent()
@@ -50,10 +68,53 @@ namespace ClashDotNetFramework
 
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
+            if (_suppressSelection)
+                return;
             if (args.SelectedItem is not NavigationViewItem item)
                 return;
 
-            Page page = item.Tag?.ToString() switch
+            string tag = item.Tag as string;
+            if (string.IsNullOrEmpty(tag))
+                return;
+
+            ApplySelection(tag);
+            NavigateTo(tag);
+        }
+
+        /// <summary>
+        /// 底部（PaneFooter）中的导航项点击处理
+        /// </summary>
+        private void FooterNavItem_Click(object sender, RoutedEventArgs e)
+        {
+            string tag = (sender as FrameworkElement)?.Tag as string;
+            if (string.IsNullOrEmpty(tag))
+                return;
+
+            ApplySelection(tag);
+            NavigateTo(tag);
+        }
+
+        private void ApplySelection(string tag)
+        {
+            _suppressSelection = true;
+            try
+            {
+                foreach (var item in NavView.MenuItems.OfType<NavigationViewItem>())
+                    item.IsSelected = string.Equals(item.Tag as string, tag, StringComparison.Ordinal);
+
+                SettingsFooterHighlight.Visibility = string.Equals(tag, "Settings", StringComparison.Ordinal)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+            finally
+            {
+                _suppressSelection = false;
+            }
+        }
+
+        private void NavigateTo(string tag)
+        {
+            Page page = tag switch
             {
                 "Overview" => Global.Pages.overviewPage,
                 "Proxies" => Global.Pages.proxiesPage,
@@ -90,7 +151,8 @@ namespace ClashDotNetFramework
                     var selected = Global.Settings.Profile.FirstOrDefault(p => p.IsSelected);
                     if (selected != null)
                     {
-                        TunHelper.ApplyTun(selected.FileName);
+                        // 内核 reload 会整体替换配置, 客户端设置需先注入订阅文件
+                        ConfigInjector.Apply(selected.FileName);
                         Global.clashClient.ReloadClashConfig(Clash.SDK.Models.Enums.ConfigType.Path, false, selected.FileName).GetAwaiter().GetResult();
                     }
                     InitTimer();
@@ -144,9 +206,12 @@ namespace ClashDotNetFramework
 
         private void InitStatus(bool connected = true)
         {
+            _isConnected = connected;
             Global.RunOnUI(() =>
             {
-                StatusLight.Fill = new SolidColorBrush(connected ? Color.FromArgb(255, 65, 184, 131) : Color.FromArgb(255, 255, 0, 0));
+                StatusLight.Fill = new SolidColorBrush(connected
+                    ? SemanticPalette.Success(Global.IsDarkTheme)
+                    : SemanticPalette.Critical(Global.IsDarkTheme));
                 StatusText.Text = Localization.Instance[connected ? "Connected" : "Disconnected"];
             });
         }
@@ -156,11 +221,23 @@ namespace ClashDotNetFramework
             try
             {
                 var response = Global.clashClient.GetClashVersion().GetAwaiter().GetResult();
-                Global.RunOnUI(() => CoreVersionText.Text = $"{Localization.Instance["CoreVersion"]}: {response.Version}");
+                _coreVersion = response.Version;
+                Global.RunOnUI(() => CoreVersionText.Text = $"{Localization.Instance["CoreVersion"]}: {_coreVersion}");
             }
             catch
             {
             }
+        }
+
+        /// <summary>
+        /// 侧栏的状态与版本是代码写入的（非 x:Bind），切换语言后需要主动重写一次，
+        /// 否则会出现"侧栏中文 + 内容区英文"的混合界面。
+        /// </summary>
+        public void RefreshLocalizedText()
+        {
+            InitStatus(_isConnected);
+            if (!string.IsNullOrEmpty(_coreVersion))
+                CoreVersionText.Text = $"{Localization.Instance["CoreVersion"]}: {_coreVersion}";
         }
 
         private void ConnectionTimer_Tick(object sender, object e)

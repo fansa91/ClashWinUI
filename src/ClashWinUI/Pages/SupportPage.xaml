@@ -6,46 +6,71 @@
       mc:Ignorable="d"
       Loaded="SupportPage_Loaded">
 
-    <ScrollViewer>
-        <StackPanel Margin="20,10,20,20" Spacing="14">
-            <TextBlock Text="{Binding [Support]}" FontSize="24" FontWeight="SemiBold" />
+    <ScrollViewer Padding="{StaticResource PageMarginCompact}">
+        <StackPanel Spacing="16">
+            <!-- 页面标题 -->
+            <TextBlock Text="{x:Bind Loc.Support, Mode=OneWay}"
+                       Style="{StaticResource PageTitleTextBlockStyle}" />
 
-            <StackPanel Spacing="4">
-                <TextBlock Text="{Binding [Developer]}" FontSize="16" FontWeight="SemiBold" />
-                <TextBlock Text="TheWanderingCoel" Foreground="#01ABF7" />
-            </StackPanel>
-
-            <StackPanel Spacing="4">
-                <TextBlock Text="{Binding [Help]}" FontSize="16" FontWeight="SemiBold" />
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <HyperlinkButton Content="Github" NavigateUri="https://github.com/ClashDotNetFramework/ClashDotNetFramework" />
-                    <HyperlinkButton Content="Discord" NavigateUri="https://discord.gg/vsDxzJ9R75" />
-                    <HyperlinkButton Content="Telegram" NavigateUri="https://t.me/ClashDotNetFramework" />
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Spacing="4">
-                <TextBlock Text="{Binding [Credits]}" FontSize="16" FontWeight="SemiBold" />
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <HyperlinkButton Content="Clash" NavigateUri="https://github.com/Dreamacro/clash" />
-                    <HyperlinkButton Content="Clash-Dashboard" NavigateUri="https://github.com/Dreamacro/clash-dashboard" />
-                    <HyperlinkButton Content="ClashX" NavigateUri="https://github.com/yichengchen/clashX" />
-                    <HyperlinkButton Content="Clash For Windows" NavigateUri="https://github.com/Fndroid/clash_for_windows_pkg" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <HyperlinkButton Content="Netch" NavigateUri="https://github.com/NetchX/Netch" />
-                    <HyperlinkButton Content="mihomo" NavigateUri="https://github.com/MetaCubeX/mihomo" />
-                    <HyperlinkButton Content="Yacd" NavigateUri="https://github.com/haishanh/yacd" />
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Spacing="4">
-                <TextBlock Text="{Binding [Donate]}" FontSize="16" FontWeight="SemiBold" />
-                <HyperlinkButton Content="Crypto Currency" NavigateUri="https://u.nu/leudd" HorizontalAlignment="Left" />
-            </StackPanel>
-
+            <!-- 开发者 -->
             <StackPanel Spacing="8">
-                <TextBlock Text="{Binding [Advertisement]}" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock Text="{x:Bind Loc.Developer, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                <TextBlock Text="TheWanderingCoel"
+                           Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+            </StackPanel>
+
+            <!-- 帮助链接 -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="{x:Bind Loc.Help, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <HyperlinkButton Content="Github"
+                                     NavigateUri="https://github.com/ClashDotNetFramework/ClashDotNetFramework" />
+                    <HyperlinkButton Content="Discord"
+                                     NavigateUri="https://discord.gg/vsDxzJ9R75" />
+                    <HyperlinkButton Content="Telegram"
+                                     NavigateUri="https://t.me/ClashDotNetFramework" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 致谢 -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="{x:Bind Loc.Credits, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <HyperlinkButton Content="Clash"
+                                     NavigateUri="https://github.com/Dreamacro/clash" />
+                    <HyperlinkButton Content="Clash-Dashboard"
+                                     NavigateUri="https://github.com/Dreamacro/clash-dashboard" />
+                    <HyperlinkButton Content="ClashX"
+                                     NavigateUri="https://github.com/yichengchen/clashX" />
+                    <HyperlinkButton Content="Clash For Windows"
+                                     NavigateUri="https://github.com/Fndroid/clash_for_windows_pkg" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                    <HyperlinkButton Content="Netch"
+                                     NavigateUri="https://github.com/NetchX/Netch" />
+                    <HyperlinkButton Content="mihomo"
+                                     NavigateUri="https://github.com/MetaCubeX/mihomo" />
+                    <HyperlinkButton Content="Yacd"
+                                     NavigateUri="https://github.com/haishanh/yacd" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 捐赠 -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="{x:Bind Loc.Donate, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                <HyperlinkButton Content="Crypto Currency"
+                                 NavigateUri="https://u.nu/leudd"
+                                 HorizontalAlignment="Left" />
+            </StackPanel>
+
+            <!-- 广告：仅在成功拉取到图片后显示整块，避免只留下空标题 -->
+            <StackPanel x:Name="AdvertisementPanel" Spacing="8" Visibility="Collapsed">
+                <TextBlock Text="{x:Bind Loc.Advertisement, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
                 <Image x:Name="MajorAdvertisement" Width="690" Height="165" Stretch="Fill"
                        HorizontalAlignment="Left" Tapped="Advertisement_Tapped" Visibility="Collapsed" />
                 <Image x:Name="MinorAdvertisement" Width="690" Height="165" Stretch="Fill"

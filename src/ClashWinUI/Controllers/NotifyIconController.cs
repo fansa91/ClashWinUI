@@ -166,6 +166,12 @@ namespace ClashDotNetFramework.Controllers
             {
                 var dict = new System.Collections.Generic.Dictionary<string, dynamic> { { "mode", mode } };
                 await Global.clashClient.ChangeClashConfigs(dict);
+                // 记住选择, 重启或重载配置后仍是这个模式
+                Global.Settings.Mode = mode;
+                Configuration.Save();
+                var selected = Global.Settings.Profile.FirstOrDefault(p => p.IsSelected);
+                if (selected != null)
+                    ConfigInjector.Apply(selected.FileName);
                 Global.Refresh = true;
             }
             catch

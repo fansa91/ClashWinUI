@@ -5,22 +5,79 @@
     Loaded="ConnectionsPage_Loaded"
     Unloaded="ConnectionsPage_Unloaded">
 
-    <Grid Padding="24">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Connections]}" FontSize="28" FontWeight="SemiBold" />
+        <!-- 页面标题 -->
+        <TextBlock Text="{x:Bind Loc.Connections, Mode=OneWay}"
+                   Style="{StaticResource PageTitleTextBlockStyle}" />
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12" Margin="0,16">
-            <Button Content="{Binding [CloseAll]}" Click="CloseAllButton_Click" MinWidth="90" />
-            <TextBlock x:Name="TotalTraffic" VerticalAlignment="Center" Opacity="0.7" />
-        </StackPanel>
+        <!-- 顶部固定工具栏 -->
+        <Border Grid.Row="1"
+                Style="{StaticResource ToolbarBorderStyle}">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <ListView x:Name="ConnectionItemListView" Grid.Row="2" SelectionMode="None"
-                  IsItemClickEnabled="True" ItemClick="ConnectionItemListView_ItemClick">
+                <!-- 搜索 -->
+                <AutoSuggestBox x:Name="ConnectionSearchBox"
+                                Width="240"
+                                VerticalAlignment="Center"
+                                PlaceholderText="{x:Bind Loc.SearchPlaceholder, Mode=OneWay}"
+                                QueryIcon="Find" />
+
+                <!-- 协议筛选 -->
+                <ComboBox x:Name="ConnectionProtocolFilter"
+                          Grid.Column="1"
+                          Width="120"
+                          VerticalAlignment="Center"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="{x:Bind Loc.All, Mode=OneWay}" />
+                    <ComboBoxItem Content="{x:Bind Loc.TCP, Mode=OneWay}" />
+                    <ComboBoxItem Content="{x:Bind Loc.UDP, Mode=OneWay}" />
+                </ComboBox>
+
+                <!-- 操作按钮 -->
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            HorizontalAlignment="Right">
+                    <Button x:Name="CloseAllButton"
+                            Content="{x:Bind Loc.CloseAll, Mode=OneWay}"
+                            Click="CloseAllButton_Click"
+                            MinWidth="80" />
+                </StackPanel>
+
+                <!-- 总流量指示 -->
+                <TextBlock x:Name="TotalTraffic"
+                           Grid.Column="3"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+            </Grid>
+        </Border>
+
+        <!-- 连接列表（虚拟化，等宽字体） -->
+        <ListView x:Name="ConnectionItemListView"
+                  Grid.Row="2"
+                  SelectionMode="None"
+                  IsItemClickEnabled="True"
+                  ItemClick="ConnectionItemListView_ItemClick"
+                  ItemContainerStyle="{StaticResource VListItemContainerStyle}"
+                  ScrollViewer.HorizontalScrollMode="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Padding="10,8" ColumnSpacing="12">
@@ -30,13 +87,46 @@
                             <ColumnDefinition Width="180" />
                             <ColumnDefinition Width="120" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding TargetHost}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="1" Text="{Binding Network}" Opacity="0.7" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="2" Text="{Binding Speed}" Opacity="0.7" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="3" Text="{Binding Time}" Opacity="0.7" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding TargetHost}"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Network}"
+                                   Opacity="0.7"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Speed}"
+                                   Opacity="0.7"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Column="3"
+                                   Text="{Binding Time}"
+                                   Opacity="0.7"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <!-- 空状态 -->
+        <StackPanel x:Name="EmptyStatePanel"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Visibility="Collapsed">
+            <FontIcon Glyph="&#xE8B7;"
+                      FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                      FontSize="36"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+            <TextBlock Text="{x:Bind Loc.NoConnections, Mode=OneWay}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       MaxWidth="420"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </StackPanel>
     </Grid>
 </Page>

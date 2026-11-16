@@ -4,41 +4,83 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Loaded="Page_Loaded">
 
-    <Grid Padding="24">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Rules]}" FontSize="28" FontWeight="SemiBold" />
+        <!-- 页面标题 -->
+        <TextBlock Text="{x:Bind Loc.Rules, Mode=OneWay}"
+                   Style="{StaticResource PageTitleTextBlockStyle}" />
 
-        <Grid Grid.Row="1" Margin="0,16,0,8" Padding="12,0">
+        <!-- 列标题 -->
+        <Grid Grid.Row="1"
+              Margin="0,0,0,8"
+              Padding="{StaticResource CardPadding}"
+              ColumnSpacing="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="160" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="160" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{Binding [RuleType]}" FontWeight="SemiBold" Opacity="0.7" />
-            <TextBlock Grid.Column="1" Text="{Binding [RulePayload]}" FontWeight="SemiBold" Opacity="0.7" />
-            <TextBlock Grid.Column="2" Text="{Binding [RuleProxy]}" FontWeight="SemiBold" Opacity="0.7" />
+            <TextBlock Text="{x:Bind Loc.RuleType, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
+            <TextBlock Grid.Column="1"
+                       Text="{x:Bind Loc.RulePayload, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
+            <TextBlock Grid.Column="2"
+                       Text="{x:Bind Loc.RuleProxy, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
         </Grid>
 
-        <ListView x:Name="RuleItemListView" Grid.Row="2" SelectionMode="None">
+        <!-- 规则列表（虚拟化） -->
+        <ListView x:Name="RuleItemListView"
+                  Grid.Row="2"
+                  SelectionMode="None"
+                  ItemContainerStyle="{StaticResource VListItemContainerStyle}"
+                  ScrollViewer.HorizontalScrollMode="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="12,8">
+                    <Grid Padding="12,8" ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="160" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="160" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Type}" />
-                        <TextBlock Grid.Column="1" Text="{Binding PayLoad}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="2" Text="{Binding Proxy}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Type}"
+                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding PayLoad}"
+                                   TextTrimming="CharacterEllipsis"
+                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Proxy}"
+                                   TextTrimming="CharacterEllipsis"
+                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <!-- 空状态 -->
+        <StackPanel x:Name="EmptyStatePanel"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Visibility="Collapsed">
+            <FontIcon Glyph="&#xE8B7;"
+                      FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                      FontSize="36"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+            <TextBlock Text="{x:Bind Loc.NoRules, Mode=OneWay}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       MaxWidth="420"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </StackPanel>
     </Grid>
 </Page>

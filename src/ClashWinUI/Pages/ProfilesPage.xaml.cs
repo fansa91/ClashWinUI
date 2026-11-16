@@ -1,3 +1,4 @@
+using ClashDotNetFramework.Controllers;
 using ClashDotNetFramework.Dialogs;
 using ClashDotNetFramework.Models.Enums;
 using ClashDotNetFramework.Models.Items;
@@ -22,9 +23,46 @@ namespace ClashDotNetFramework.Pages
             DataContext = Localization.Instance;
         }
 
+        /// <summary>
+        /// 本地化字符串表，供 x:Bind 使用
+        /// </summary>
+        public Localization Loc => Localization.Instance;
+
         private void ProfilesPage_Loaded(object sender, RoutedEventArgs e)
         {
             ProfileItemListView.ItemsSource = Global.Settings.Profile;
+            // 默认高亮当前生效的订阅，用户点其它行即可切换操作对象
+            var active = Global.Settings.Profile.FirstOrDefault(p => p.IsSelected);
+            if (active != null)
+                ProfileItemListView.SelectedItem = active;
+            UpdateTargetState();
+        }
+
+        /// <summary>
+        /// 列表高亮行即「操作对象」。三个按钮都作用于它：
+        /// 未选中任何行时禁用；选中行已是生效配置时「激活」按钮显示"已激活"并禁用。
+        /// </summary>
+        private void UpdateTargetState()
+        {
+            var target = ProfileItemListView.SelectedItem as ProfileItem;
+            bool hasTarget = target != null;
+
+            TargetPanel.Visibility = hasTarget ? Visibility.Visible : Visibility.Collapsed;
+            TargetProfileText.Text = target?.Name ?? string.Empty;
+
+            ActivateButton.IsEnabled = hasTarget && !target!.IsSelected;
+            UpdateProfileButton.IsEnabled = hasTarget;
+            CopyUrlButton.IsEnabled = hasTarget && !string.IsNullOrWhiteSpace(target!.Url);
+
+            // 已经是生效配置时，提示用户无需重复激活
+            ActivateButton.Content = hasTarget && target!.IsSelected
+                ? Localization.Instance["Activated"]
+                : Localization.Instance["Activate"];
+        }
+
+        private void ProfileItemListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            UpdateTargetState();
         }
 
         private void ProfileGrid_DragOver(object sender, DragEventArgs e)
@@ -60,15 +98,24 @@ namespace ClashDotNetFramework.Pages
         {
             try
             {
-                if (!profile.IsSelected)
-                {
+                // 切换或更新订阅后都要重新注入客户端设置, 否则新文件里没有 tun / sniffer 等段
+                ConfigInjector.Apply(profile.FileName);
+
+                if (Global.clashClient != null && Global.clashController?.IsRunning == true)
                     await Global.clashClient.ReloadClashConfig(Clash.SDK.Models.Enums.ConfigType.Path, false, profile.FileName);
-                    foreach (var p in Global.Settings.Profile)
-                        p.IsSelected = false;
-                    profile.IsSelected = true;
-                    Global.Refresh = true;
-                    Configuration.Save();
-                }
+
+                foreach (var p in Global.Settings.Profile)
+                    p.IsSelected = false;
+                profile.IsSelected = true;
+                Global.Refresh = true;
+                Configuration.Save();
+                // 生效配置变了，列表高亮与按钮可用状态都要跟着更新
+                Global.RunOnUI(() =>
+                {
+                    if (ProfileItemListView.SelectedItem is ProfileItem current)
+                        ProfileItemListView.SelectedItem = current;
+                    UpdateTargetState();
+                });
             }
             catch
             {
@@ -122,6 +169,8 @@ namespace ClashDotNetFramework.Pages
                 foreach (var profile in Global.Settings.Profile)
                     profile.Update();
                 Global.RunOnUI(() => UpdateAllButton.Content = "Done!");
+                // 订阅文件被整份覆盖, 需要重新注入客户端设置后再让内核加载
+                CoreManager.ApplyProfileConfig();
                 Configuration.Save();
             });
         }
@@ -237,6 +286,58 @@ namespace ClashDotNetFramework.Pages
                 }
             });
             Configuration.Save();
+        }
+
+        /// <summary>把当前高亮的行设为生效配置。</summary>
+        private async void ActivateSubscription_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ProfileItemListView.SelectedItem as ProfileItem;
+            if (target == null || target.IsSelected)
+                return;
+            await SetAsDefaultProfile(target);
+            UpdateTargetState();
+        }
+
+        /// <summary>只更新当前高亮的那一行，不影响其它订阅。</summary>
+        private async void UpdateSubscription_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ProfileItemListView.SelectedItem as ProfileItem;
+            if (target == null)
+                return;
+            UpdateProfileButton.IsEnabled = false;
+            try
+            {
+                await Task.Run(() => target.Update());
+            }
+            finally
+            {
+                UpdateProfileButton.IsEnabled = true;
+            }
+            UpdateTargetState();
+        }
+
+        private void CopySubscription_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ProfileItemListView.SelectedItem as ProfileItem;
+            if (target == null || string.IsNullOrWhiteSpace(target.Url))
+                return;
+            try
+            {
+                var package = new Windows.ApplicationModel.DataTransfer.DataPackage();
+                package.SetText(target.Url);
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(package);
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// 语言切换后刷新由代码写入的文案（按钮文案与操作对象行）。
+        /// </summary>
+        public void RefreshLocalizedText()
+        {
+            UpdateTargetState();
         }
     }
 }

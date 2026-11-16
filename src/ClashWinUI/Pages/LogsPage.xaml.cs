@@ -12,6 +12,9 @@ namespace ClashDotNetFramework.Pages
 {
     public sealed partial class LogsPage : Page
     {
+        /// <summary>本地化字符串表，供 x:Bind 编译期绑定使用</summary>
+        public Localization Loc => Localization.Instance;
+
         private bool _isLogEnabled = true;
         private readonly ObservableCollection<LogItem> _logItemCollection = new();
 
@@ -20,10 +23,22 @@ namespace ClashDotNetFramework.Pages
             InitializeComponent();
             DataContext = Localization.Instance;
             LogItemListView.ItemsSource = _logItemCollection;
+            // 集合变化时同步空状态提示（新增/清空都会走到这里）
+            _logItemCollection.CollectionChanged += (s, e) => UpdateEmptyState();
+        }
+
+        /// <summary>日志为空时给出提示，避免出现整页空白</summary>
+        private void UpdateEmptyState()
+        {
+            EmptyStatePanel.Visibility = _logItemCollection.Count == 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void LogsPage_Loaded(object sender, RoutedEventArgs e)
         {
+            UpdateEmptyState();
+            UpdateStatusButton();
             if (Global.clashClient != null)
                 Global.clashClient.LoggingReceivedEvt += OnLogReceived;
             Task.Run(async () =>
@@ -31,13 +46,7 @@ namespace ClashDotNetFramework.Pages
                 try
                 {
                     var config = await Global.clashClient.GetClashConfigs();
-                    string mode = config.Mode switch
-                    {
-                        ModeType.Direct => Localization.Instance["Direct"],
-                        ModeType.Global => Localization.Instance["Global"],
-                        _ => Localization.Instance["Rule"]
-                    };
-                    Global.RunOnUI(() => CurrentMode.Text = $"{Localization.Instance["ProxyMode"]}: {mode}");
+                    Global.RunOnUI(() => UpdateModeText(config.Mode));
                 }
                 catch
                 {
@@ -49,6 +58,27 @@ namespace ClashDotNetFramework.Pages
         {
             if (Global.clashClient != null)
                 Global.clashClient.LoggingReceivedEvt -= OnLogReceived;
+        }
+
+        /// <summary>当前代理模式，缓存下来供语言切换时重新格式化文案</summary>
+        private ModeType _mode = ModeType.Rule;
+
+        private void UpdateModeText(ModeType mode)
+        {
+            _mode = mode;
+            string name = mode switch
+            {
+                ModeType.Direct => Localization.Instance["Direct"],
+                ModeType.Global => Localization.Instance["Global"],
+                _ => Localization.Instance["Rule"]
+            };
+            CurrentMode.Text = $"{Localization.Instance["ProxyMode"]}: {name}";
+        }
+
+        /// <summary>开始/停止按钮的文案由代码写入，切换语言时需要同步。</summary>
+        private void UpdateStatusButton()
+        {
+            StatusButton.Content = Localization.Instance[_isLogEnabled ? "Stop" : "Start"];
         }
 
         private void OnLogReceived(object sender, LoggingEvtArgs e)
@@ -77,14 +107,34 @@ namespace ClashDotNetFramework.Pages
             if (_isLogEnabled)
             {
                 Global.clashClient.LoggingReceivedEvt -= OnLogReceived;
-                StatusButton.Content = Localization.Instance["Start"];
             }
             else
             {
                 Global.clashClient.LoggingReceivedEvt += OnLogReceived;
-                StatusButton.Content = Localization.Instance["Stop"];
             }
             _isLogEnabled = !_isLogEnabled;
+            UpdateStatusButton();
+        }
+
+        /// <summary>
+        /// 主题切换后重新绑定日志项，使 LevelToColorConverter 根据新主题重新计算前景色。
+        /// LogItem 未实现 INotifyPropertyChanged，需清空并重新添加以触发重新绑定。
+        /// </summary>
+        public void RefreshSemanticColors()
+        {
+            var items = _logItemCollection.ToList();
+            _logItemCollection.Clear();
+            foreach (var item in items)
+                _logItemCollection.Add(item);
+        }
+
+        /// <summary>
+        /// 语言切换后刷新由代码写入的文案（按钮与模式一行）。
+        /// </summary>
+        public void RefreshLocalizedText()
+        {
+            UpdateStatusButton();
+            UpdateModeText(_mode);
         }
     }
 }

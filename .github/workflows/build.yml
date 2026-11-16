@@ -9,6 +9,9 @@ on:
 
 env:
   MIHOMO_VERSION: v1.19.34
+  WINTUN_VERSION: '0.14.1'
+  # 官方 https://www.wintun.net/ 公布的 wintun-0.14.1.zip 的 SHA2-256
+  WINTUN_ZIP_SHA256: '07c256185d6ee3652e09fa55c0b673e2624b565e02c4b9091c79ca7d2f24ef51'
 
 jobs:
   build:
@@ -38,9 +41,57 @@ jobs:
           Expand-Archive -Path $zip -DestinationPath $ext -Force
           $exe = Get-ChildItem -Path $ext -Recurse -Filter '*.exe' | Select-Object -First 1
           Move-Item -Path $exe.FullName -Destination native/mihomo.exe -Force
-          $wintun = Get-ChildItem -Path $ext -Recurse -Filter 'wintun.dll' | Select-Object -First 1
-          if ($wintun) { Move-Item -Path $wintun.FullName -Destination native/wintun.dll -Force }
+          # mihomo 的 Windows zip 只含 mihomo.exe，不含 wintun.dll；
+          # TUN 所需的签名驱动由下一步从 Wintun 官方单独获取。
           Invoke-WebRequest -Uri 'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb' -OutFile native/Country.mmdb
+
+      - name: Fetch Wintun driver (official signed DLL)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Join-Path $env:RUNNER_TEMP 'wintun.zip'
+          $ext = Join-Path $env:RUNNER_TEMP 'wintun'
+          $url = "https://www.wintun.net/builds/wintun-$($env:WINTUN_VERSION).zip"
+
+          # 预编译签名 DLL 是 Wintun 唯一受支持的分发方式，下载后必须校验官方哈希
+          $downloaded = $false
+          foreach ($attempt in 1..3) {
+            try {
+              Invoke-WebRequest -Uri $url -OutFile $zip
+              $downloaded = $true
+              break
+            } catch {
+              Write-Host "wintun download attempt $attempt failed: $_"
+              Start-Sleep -Seconds 5
+            }
+          }
+          if (-not $downloaded) { throw "failed to download $url" }
+
+          $actual = (Get-FileHash -Path $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expected = ($env:WINTUN_ZIP_SHA256).ToLowerInvariant()
+          if ($actual -ne $expected) {
+            throw "wintun-$($env:WINTUN_VERSION).zip SHA256 mismatch: expected $expected, got $actual"
+          }
+
+          Expand-Archive -Path $zip -DestinationPath $ext -Force
+          # 官方包结构: wintun/bin/{amd64,x86,arm64,arm}/wintun.dll，本机构建为 win-x64
+          $dll = Get-ChildItem -Path $ext -Recurse -Filter 'wintun.dll' |
+            Where-Object { $_.FullName -match '[\\/]amd64[\\/]wintun\.dll$' } |
+            Select-Object -First 1
+          if (-not $dll) { throw 'amd64/wintun.dll not found in the official Wintun archive' }
+          Copy-Item -Path $dll.FullName -Destination 'native/wintun.dll' -Force
+          Write-Host "Installed $($dll.FullName) ($((Get-Item 'native/wintun.dll').Length) bytes)"
+
+      - name: Verify native assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # 缺任何一项都会在打包前直接失败，避免产出 TUN 无法启动的包
+          foreach ($name in @('mihomo.exe', 'wintun.dll', 'Country.mmdb')) {
+            $item = Get-Item (Join-Path 'native' $name) -ErrorAction Stop
+            if ($item.Length -le 0) { throw "native/$name is empty" }
+            Write-Host ("{0}: {1} bytes" -f $name, $item.Length)
+          }
 
       - name: Publish
         shell: pwsh

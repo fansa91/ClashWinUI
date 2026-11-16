@@ -2,45 +2,130 @@
     x:Class="ClashDotNetFramework.Pages.ProfilesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:settings="using:CommunityToolkit.WinUI.Controls"
     Loaded="ProfilesPage_Loaded">
 
-    <Grid Padding="24" AllowDrop="True" Drop="ProfileGrid_Drop" DragOver="ProfileGrid_DragOver">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="16" AllowDrop="True" Drop="ProfileGrid_Drop" DragOver="ProfileGrid_DragOver">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Profiles]}" FontSize="28" FontWeight="SemiBold" />
+        <!-- 页面标题 -->
+        <TextBlock Text="{x:Bind Loc.Profiles, Mode=OneWay}"
+                   Style="{StaticResource PageTitleTextBlockStyle}" />
 
-        <Grid Grid.Row="1" Margin="0,16" ColumnSpacing="8">
+        <!-- 订阅卡片：说明当前操作对象 + 操作按钮组 -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardBorderStyle}"
+                Margin="0,0,0,0">
+            <Grid ColumnSpacing="16" RowSpacing="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                           Text="{x:Bind Loc.Subscription, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+
+                <!-- 这三个按钮作用于下方列表中当前高亮的行 -->
+                <StackPanel Grid.Row="1" Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            Spacing="12"
+                            Visibility="Collapsed"
+                            x:Name="TargetPanel">
+                    <TextBlock Text="{x:Bind Loc.TargetProfile, Mode=OneWay}"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Name="TargetProfileText"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis"
+                               MaxWidth="260" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                    <Button x:Name="ActivateButton"
+                            Content="{x:Bind Loc.Activate, Mode=OneWay}"
+                            Click="ActivateSubscription_Click"
+                            MinWidth="90" />
+                    <Button x:Name="UpdateProfileButton"
+                            Content="{x:Bind Loc.Update, Mode=OneWay}"
+                            Click="UpdateSubscription_Click"
+                            MinWidth="90" />
+                    <Button x:Name="CopyUrlButton"
+                            Content="{x:Bind Loc.CopyUrl, Mode=OneWay}"
+                            Click="CopySubscription_Click"
+                            MinWidth="90" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 导入与更新工具栏 -->
+        <Grid Grid.Row="2" Margin="0,0,0,0" ColumnSpacing="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="UrlTextBox" PlaceholderText="{Binding [DownloadFromURL]}" VerticalAlignment="Center" />
-            <Button x:Name="DownloadButton" Grid.Column="1" Content="{Binding [Download]}" Click="DownloadButton_Click" />
-            <Button x:Name="UpdateAllButton" Grid.Column="2" Content="{Binding [UpdateAll]}" Click="UpdateAllButton_Click" />
-            <Button x:Name="ImportButton" Grid.Column="3" Content="{Binding [Import]}" Click="ImportButton_Click" />
+            <TextBox x:Name="UrlTextBox"
+                     PlaceholderText="{x:Bind Loc.DownloadFromURL, Mode=OneWay}"
+                     VerticalAlignment="Center" />
+            <Button x:Name="DownloadButton"
+                    Grid.Column="1"
+                    Content="{x:Bind Loc.Download, Mode=OneWay}"
+                    Click="DownloadButton_Click" />
+            <Button x:Name="UpdateAllButton"
+                    Grid.Column="2"
+                    Content="{x:Bind Loc.UpdateAll, Mode=OneWay}"
+                    Click="UpdateAllButton_Click" />
+            <Button x:Name="ImportButton"
+                    Grid.Column="3"
+                    Content="{x:Bind Loc.Import, Mode=OneWay}"
+                    Click="ImportButton_Click" />
         </Grid>
 
-        <ListView x:Name="ProfileItemListView" Grid.Row="2" SelectionMode="Single">
+        <!-- 配置文件列表（虚拟化） -->
+        <ListView x:Name="ProfileItemListView"
+                  Grid.Row="3"
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True"
+                  ItemClick="ProfileItemListView_ItemClick"
+                  ItemContainerStyle="{StaticResource VListItemContainerStyle}"
+                  ScrollViewer.HorizontalScrollMode="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="12,10" CornerRadius="6" Margin="0,2"
-                          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                    <Grid Padding="12,10" ColumnSpacing="12">
                         <Grid.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="Select Profile" Click="SelectProfile_Click" />
-                                <MenuFlyoutItem Text="Update Profile" Click="UpdateProfile_Click" />
-                                <MenuFlyoutItem Text="Edit Profile" Click="EditProfile_Click" />
-                                <MenuFlyoutItem Text="Duplicate Profile" Click="DuplicateProfile_Click" />
-                                <MenuFlyoutItem Text="Go to URL" Click="GoToURL_Click" />
-                                <MenuFlyoutItem Text="Profile Settings" Click="ProfileSettings_Click" />
+                                <MenuFlyoutItem Text="{Binding SelectProfile, Source={StaticResource Loc}}"
+                                                Click="SelectProfile_Click" />
+                                <MenuFlyoutItem Text="{Binding UpdateProfile, Source={StaticResource Loc}}"
+                                                Click="UpdateProfile_Click" />
+                                <MenuFlyoutItem Text="{Binding EditProfile, Source={StaticResource Loc}}"
+                                                Click="EditProfile_Click" />
+                                <MenuFlyoutItem Text="{Binding DuplicateProfile, Source={StaticResource Loc}}"
+                                                Click="DuplicateProfile_Click" />
+                                <MenuFlyoutItem Text="{Binding GoToURL, Source={StaticResource Loc}}"
+                                                Click="GoToURL_Click" />
+                                <MenuFlyoutItem Text="{Binding ProfileSettings, Source={StaticResource Loc}}"
+                                                Click="ProfileSettings_Click" />
                                 <MenuFlyoutSeparator />
-                                <MenuFlyoutItem Text="Delete Profile" Click="DeleteProfile_Click" />
+                                <MenuFlyoutItem Text="{Binding DeleteProfile, Source={StaticResource Loc}}"
+                                                Click="DeleteProfile_Click" />
                             </MenuFlyout>
                         </Grid.ContextFlyout>
                         <Grid.ColumnDefinitions>
@@ -49,15 +134,19 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding Type}" Opacity="0.6" />
+                                <TextBlock Text="{Binding Name}"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding Type}"
+                                           Opacity="0.6" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="12" Opacity="0.7" Margin="0,4,0,0">
-                                <TextBlock Text="{Binding ProxyCount, Converter={StaticResource ProfileTypeToString}}" />
+                                <TextBlock Text="{Binding ProxyCount, Converter={StaticResource NodesCount}}" />
                                 <TextBlock Text="{Binding LastUpdate}" />
                             </StackPanel>
                         </StackPanel>
-                        <SymbolIcon Grid.Column="1" Symbol="Accept" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
+                        <SymbolIcon Grid.Column="1"
+                                    Symbol="Accept"
+                                    Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

@@ -4,54 +4,196 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Loaded="Page_Loaded">
 
-    <Grid Padding="24">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Proxies]}" FontSize="28" FontWeight="SemiBold" />
+        <!-- ==================== 页面标题 ==================== -->
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12" Margin="0,16">
-            <RadioButton x:Name="DirectButton" GroupName="Mode" Content="{Binding [Direct]}" Checked="DirectButton_Checked" />
-            <RadioButton x:Name="RuleButton" GroupName="Mode" Content="{Binding [Rule]}" Checked="RuleButton_Checked" />
-            <RadioButton x:Name="GlobalButton" GroupName="Mode" Content="{Binding [Global]}" Checked="GlobalButton_Checked" />
-        </StackPanel>
+            <TextBlock Text="{x:Bind Loc.Proxies, Mode=OneWay}"
+                       Style="{StaticResource PageTitleTextBlockStyle}" />
 
-        <ListView x:Name="ProxyListView"
+            <TextBlock x:Name="NodeCountText"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource SecondaryCaptionTextBlockStyle}"
+                       Text="" />
+        </Grid>
+
+        <!-- ==================== 出站模式切换 + 搜索 ==================== -->
+        <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 居中的分段式模式选择器（Button，避免 ToggleButton 程序集引用问题） -->
+            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+                <Button x:Name="RuleModeButton"
+                        Tag="Rule"
+                        Content="{x:Bind Loc.Rule, Mode=OneWay}"
+                        Click="ModeButton_Click" />
+                <Button x:Name="GlobalModeButton"
+                        Tag="Global"
+                        Content="{x:Bind Loc.Global, Mode=OneWay}"
+                        Click="ModeButton_Click" />
+                <Button x:Name="DirectModeButton"
+                        Tag="Direct"
+                        Content="{x:Bind Loc.Direct, Mode=OneWay}"
+                        Click="ModeButton_Click" />
+            </StackPanel>
+
+            <AutoSuggestBox x:Name="NodeSearchBox"
+                            Grid.Column="1"
+                            Width="260"
+                            VerticalAlignment="Center"
+                            PlaceholderText="{x:Bind Loc.SearchNodes, Mode=OneWay}"
+                            QueryIcon="Find"
+                            TextChanged="NodeSearchBox_TextChanged" />
+        </Grid>
+
+        <!-- ==================== 节点列表（虚拟化 GridView） ==================== -->
+        <GridView x:Name="ProxyGridView"
                   Grid.Row="2"
+                  Padding="0"
                   SelectionMode="Single"
-                  SelectionChanged="ProxyListView_SelectionChanged">
-            <ListView.GroupStyle>
+                  SelectionChanged="ProxyGridView_SelectionChanged"
+                  ItemContainerStyle="{StaticResource VCardItemContainerStyle}"
+                  ScrollViewer.HorizontalScrollMode="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+
+            <GridView.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="16" Margin="0,8" />
+                            <Grid Margin="0,12,0,8" ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                                <Rectangle Grid.Column="1"
+                                           Height="1"
+                                           VerticalAlignment="Center"
+                                           Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                            </Grid>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
-            </ListView.GroupStyle>
-            <ListView.ItemTemplate>
+            </GridView.GroupStyle>
+
+            <GridView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Background="{Binding IsSelected, Converter={StaticResource SelectedToBackground}}"
-                          Padding="10,8" CornerRadius="6" Margin="0,2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="1" Text="{Binding Type}" Opacity="0.7" VerticalAlignment="Center" Margin="12,0" />
-                        <Button Grid.Column="2"
-                                Content="{Binding Latency, Converter={StaticResource LatencyToText}}"
-                                Foreground="{Binding Latency, Converter={StaticResource LatencyToColor}}"
-                                Tag="{Binding Name}"
-                                Click="TestButton_Click"
-                                MinWidth="90" />
+                    <Grid>
+                        <!-- 卡片底板 -->
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="12" />
+
+                        <!-- 选中态覆盖层（强调色背景 + 强调色边框） -->
+                        <Border Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="12"
+                                Visibility="{Binding IsSelected, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+
+                        <!-- 卡片内容 -->
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 左侧选中指示条 -->
+                            <Grid Grid.Column="0" Width="3">
+                                <Border CornerRadius="2" Background="Transparent" />
+                                <Border CornerRadius="2"
+                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Visibility="{Binding IsSelected, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
+                            </Grid>
+
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <!-- 第一行：节点名称 + 协议标签 -->
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                               VerticalAlignment="Center"
+                                               FontSize="14"
+                                               TextTrimming="CharacterEllipsis" />
+
+                                    <Border Grid.Column="1" Style="{StaticResource TagBorderStyle}">
+                                        <TextBlock Text="{Binding Type, Mode=OneWay}"
+                                                   Style="{StaticResource TagTextBlockStyle}" />
+                                    </Border>
+                                </Grid>
+
+                                <!-- 第二行：延迟徽章 -->
+                                <Border CornerRadius="4"
+                                        Padding="6,2,6,2"
+                                        HorizontalAlignment="Left"
+                                        Background="{Binding Latency, Mode=OneWay, Converter={StaticResource LatencyToBackground}}">
+                                    <TextBlock Text="{Binding Latency, Mode=OneWay, Converter={StaticResource LatencyToText}}"
+                                               Foreground="{Binding Latency, Mode=OneWay, Converter={StaticResource LatencyToBrush}}"
+                                               FontFamily="Cascadia Mono, Consolas"
+                                               FontSize="11" />
+                                </Border>
+                            </StackPanel>
+
+                            <!-- 延迟测试 -->
+                            <Button Grid.Column="2"
+                                    VerticalAlignment="Center"
+                                    Width="36"
+                                    Height="32"
+                                    Padding="0"
+                                    ToolTipService.ToolTip="{Binding Test, Mode=OneWay}"
+                                    Tag="{Binding Name, Mode=OneWay}"
+                                    Click="TestButton_Click">
+                                <FontIcon Glyph="&#xE72C;" FontFamily="{ThemeResource SymbolThemeFontFamily}" FontSize="14" />
+                            </Button>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </GridView.ItemTemplate>
+        </GridView>
+
+        <!-- ==================== 空状态 ==================== -->
+        <StackPanel x:Name="EmptyStatePanel"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Visibility="Collapsed">
+            <FontIcon Glyph="&#xE8B7;"
+                      FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                      FontSize="36"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+            <TextBlock Text="{x:Bind Loc.NoProxies, Mode=OneWay}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       MaxWidth="420"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </StackPanel>
     </Grid>
 </Page>

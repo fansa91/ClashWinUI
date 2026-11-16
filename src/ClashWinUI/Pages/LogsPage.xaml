@@ -5,22 +5,85 @@
     Loaded="LogsPage_Loaded"
     Unloaded="LogsPage_Unloaded">
 
-    <Grid Padding="24">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Logs]}" FontSize="28" FontWeight="SemiBold" />
+        <!-- 页面标题 -->
+        <TextBlock Text="{x:Bind Loc.Logs, Mode=OneWay}"
+                   Style="{StaticResource PageTitleTextBlockStyle}" />
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12" Margin="0,16">
-            <Button x:Name="StatusButton" Content="{Binding [Stop]}" Click="StatusButton_Click" MinWidth="90" />
-            <Button Content="{Binding [Clear]}" Click="ClearButton_Click" MinWidth="90" />
-            <TextBlock x:Name="CurrentMode" VerticalAlignment="Center" Opacity="0.7" />
-        </StackPanel>
+        <!-- 顶部固定工具栏 -->
+        <Border Grid.Row="1"
+                Style="{StaticResource ToolbarBorderStyle}"
+                Margin="0,0,0,0">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <ListView x:Name="LogItemListView" Grid.Row="2" SelectionMode="None">
+                <!-- 搜索 -->
+                <AutoSuggestBox x:Name="LogSearchBox"
+                                Width="240"
+                                VerticalAlignment="Center"
+                                PlaceholderText="{x:Bind Loc.SearchPlaceholder, Mode=OneWay}"
+                                QueryIcon="Find" />
+
+                <!-- 等级筛选 -->
+                <ComboBox x:Name="LogLevelFilter"
+                          Grid.Column="1"
+                          Width="120"
+                          VerticalAlignment="Center"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="{x:Bind Loc.AllLevels, Mode=OneWay}" />
+                    <ComboBoxItem Content="{x:Bind Loc.Info, Mode=OneWay}" />
+                    <ComboBoxItem Content="{x:Bind Loc.Warning, Mode=OneWay}" />
+                    <ComboBoxItem Content="{x:Bind Loc.Error, Mode=OneWay}" />
+                    <ComboBoxItem Content="{x:Bind Loc.Debug, Mode=OneWay}" />
+                </ComboBox>
+
+                <!-- 操作按钮 -->
+                <StackPanel Grid.Column="3"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            HorizontalAlignment="Right">
+                    <Button x:Name="StatusButton"
+                            Click="StatusButton_Click"
+                            MinWidth="80" />
+                    <Button x:Name="ClearButton"
+                            Content="{x:Bind Loc.Clear, Mode=OneWay}"
+                            Click="ClearButton_Click"
+                            MinWidth="80" />
+                </StackPanel>
+
+                <!-- 当前模式指示 -->
+                <TextBlock x:Name="CurrentMode"
+                           Grid.Column="4"
+                           Margin="4,0,0,0"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+            </Grid>
+        </Border>
+
+        <!-- 日志列表（虚拟化，等宽字体） -->
+        <ListView x:Name="LogItemListView"
+                  Grid.Row="2"
+                  SelectionMode="None"
+                  ItemContainerStyle="{StaticResource VListItemContainerStyle}"
+                  ScrollViewer.HorizontalScrollMode="Disabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Padding="8,6" ColumnSpacing="12">
@@ -29,12 +92,40 @@
                             <ColumnDefinition Width="80" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Time}" Opacity="0.7" />
-                        <TextBlock Grid.Column="1" Text="{Binding Level}" Foreground="{Binding Level, Converter={StaticResource LevelToColor}}" FontWeight="SemiBold" />
-                        <TextBlock Grid.Column="2" Text="{Binding PayLoad}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Time}"
+                                   Opacity="0.7"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Level}"
+                                   Foreground="{Binding Level, Converter={StaticResource LevelToColor}}"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding PayLoad}"
+                                   TextWrapping="Wrap"
+                                   Style="{StaticResource MonospaceBodyTextBlockStyle}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <!-- 空状态 -->
+        <StackPanel x:Name="EmptyStatePanel"
+                    Grid.Row="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Visibility="Collapsed">
+            <FontIcon Glyph="&#xE8B7;"
+                      FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                      FontSize="36"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+            <TextBlock Text="{x:Bind Loc.NoLogs, Mode=OneWay}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       MaxWidth="360"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </StackPanel>
     </Grid>
 </Page>

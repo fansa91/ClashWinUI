@@ -16,6 +16,9 @@ namespace ClashDotNetFramework.Pages
 {
     public sealed partial class OverviewPage : Page
     {
+        /// <summary>本地化字符串表，供 x:Bind 编译期绑定使用</summary>
+        public Localization Loc => Localization.Instance;
+
         public ISeries[] Series { get; set; }
 
         private readonly ObservableCollection<double> _upload = new() { 0.00 };
@@ -157,7 +160,20 @@ namespace ClashDotNetFramework.Pages
             if (_loading) return;
             bool on = ((ToggleSwitch)sender).IsOn;
             await CoreManager.SetTunMode(on);
-            Global.RunOnUI(() => TunModeSwitch.IsOn = Global.Settings.TunMode);
+            // 开启 TUN 会顺带关闭系统代理（或启动失败时回滚），两个开关一起同步
+            Global.RunOnUI(() =>
+            {
+                _loading = true;
+                try
+                {
+                    TunModeSwitch.IsOn = Global.Settings.TunMode;
+                    SystemProxySwitch.IsOn = Global.Settings.SystemProxy;
+                }
+                finally
+                {
+                    _loading = false;
+                }
+            });
         }
 
         private async void CoreButton_Click(object sender, RoutedEventArgs e)
@@ -178,6 +194,16 @@ namespace ClashDotNetFramework.Pages
         {
             bool running = Global.clashController?.IsRunning == true;
             CoreButton.Content = Localization.Instance[running ? "StopCore" : "StartCore"];
+        }
+
+        /// <summary>
+        /// 语言切换后刷新由代码写入的文案。
+        /// ModeText / AllowLanText / Ipv6Text 依赖运行时状态，需要重新向内核取一次。
+        /// </summary>
+        public void RefreshLocalizedText()
+        {
+            UpdateCoreButton();
+            Task.Run(() => LoadRuntimeInfo());
         }
 
         private static string FormatUptime(TimeSpan ts)

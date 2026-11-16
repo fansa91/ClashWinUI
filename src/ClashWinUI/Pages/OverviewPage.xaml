@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="ClashDotNetFramework.Pages.OverviewPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,13 +7,6 @@
     Unloaded="Page_Unloaded">
 
     <Page.Resources>
-        <Style x:Key="CardBorder" TargetType="Border">
-            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="18" />
-        </Style>
         <Style x:Key="StatLabel" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13" />
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
@@ -37,7 +30,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Padding="24">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -45,19 +38,37 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding [Overview]}" FontSize="28" FontWeight="SemiBold" />
+        <!-- 页面标题 -->
+        <TextBlock Text="{x:Bind Loc.Overview, Mode=OneWay}"
+                   Style="{StaticResource PageTitleTextBlockStyle}" />
 
         <!-- 控制栏 -->
-        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="0,16,0,0">
+        <Border Grid.Row="1"
+                Style="{StaticResource CardBorderStyle}"
+                Margin="0,16,0,0">
             <StackPanel Orientation="Horizontal" Spacing="28" VerticalAlignment="Center">
-                <ToggleSwitch x:Name="SystemProxySwitch" Header="{Binding [SystemProxy]}" Toggled="SystemProxySwitch_Toggled" />
-                <ToggleSwitch x:Name="TunModeSwitch" Header="{Binding [TunMode]}" Toggled="TunModeSwitch_Toggled" />
-                <Button x:Name="CoreButton" Content="{Binding [StartCore]}" Click="CoreButton_Click" MinWidth="120" VerticalAlignment="Bottom" />
+                <ToggleSwitch x:Name="SystemProxySwitch"
+                              Header="{x:Bind Loc.SystemProxy, Mode=OneWay}"
+                              Toggled="SystemProxySwitch_Toggled"
+                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                <ToggleSwitch x:Name="TunModeSwitch"
+                              Header="{x:Bind Loc.TunMode, Mode=OneWay}"
+                              Toggled="TunModeSwitch_Toggled"
+                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                <Button x:Name="CoreButton"
+                        Content="{x:Bind Loc.StartCore, Mode=OneWay}"
+                        Click="CoreButton_Click"
+                        MinWidth="120"
+                        VerticalAlignment="Bottom" />
             </StackPanel>
         </Border>
 
         <!-- KPI 卡片 -->
-        <Grid Grid.Row="2" ColumnSpacing="12" Margin="0,12,0,0">
+        <Grid Grid.Row="2"
+              ColumnSpacing="12"
+              Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -65,59 +76,90 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Style="{StaticResource CardBorder}">
+            <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel>
-                    <TextBlock Style="{StaticResource StatLabel}" Text="{Binding [UploadSpeed]}" />
-                    <TextBlock x:Name="UploadSpeedText" Style="{StaticResource StatValue}" Text="0.00 B/s" />
+                    <TextBlock Style="{StaticResource StatLabel}"
+                               Text="{x:Bind Loc.UploadSpeed, Mode=OneWay}" />
+                    <TextBlock x:Name="UploadSpeedText"
+                               Style="{StaticResource StatValue}"
+                               Text="0.00 B/s" />
                 </StackPanel>
             </Border>
-            <Border Grid.Column="1" Style="{StaticResource CardBorder}">
+            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}">
                 <StackPanel>
-                    <TextBlock Style="{StaticResource StatLabel}" Text="{Binding [DownloadSpeed]}" />
-                    <TextBlock x:Name="DownloadSpeedText" Style="{StaticResource StatValue}" Text="0.00 B/s" />
+                    <TextBlock Style="{StaticResource StatLabel}"
+                               Text="{x:Bind Loc.DownloadSpeed, Mode=OneWay}" />
+                    <TextBlock x:Name="DownloadSpeedText"
+                               Style="{StaticResource StatValue}"
+                               Text="0.00 B/s" />
                 </StackPanel>
             </Border>
-            <Border Grid.Column="2" Style="{StaticResource CardBorder}">
+            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}">
                 <StackPanel>
-                    <TextBlock Style="{StaticResource StatLabel}" Text="{Binding [ActiveConnections]}" />
-                    <TextBlock x:Name="ConnectionCountText" Style="{StaticResource StatValue}" Text="0" />
+                    <TextBlock Style="{StaticResource StatLabel}"
+                               Text="{x:Bind Loc.ActiveConnections, Mode=OneWay}" />
+                    <TextBlock x:Name="ConnectionCountText"
+                               Style="{StaticResource StatValue}"
+                               Text="0" />
                 </StackPanel>
             </Border>
-            <Border Grid.Column="3" Style="{StaticResource CardBorder}">
+            <Border Grid.Column="3" Style="{StaticResource CardBorderStyle}">
                 <StackPanel>
-                    <TextBlock Style="{StaticResource StatLabel}" Text="{Binding [Uptime]}" />
-                    <TextBlock x:Name="UptimeText" Style="{StaticResource StatValue}" Text="00:00:00" />
+                    <TextBlock Style="{StaticResource StatLabel}"
+                               Text="{x:Bind Loc.Uptime, Mode=OneWay}" />
+                    <TextBlock x:Name="UptimeText"
+                               Style="{StaticResource StatValue}"
+                               Text="00:00:00" />
                 </StackPanel>
             </Border>
         </Grid>
 
         <!-- 图表 + 运行信息 -->
-        <Grid Grid.Row="3" ColumnSpacing="12" Margin="0,12,0,0">
+        <Grid Grid.Row="3"
+              ColumnSpacing="12"
+              Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Style="{StaticResource CardBorder}">
+            <!-- 流量趋势图表 -->
+            <Border Style="{StaticResource CardBorderStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid>
+                    <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding [TrafficTrend]}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                        <TextBlock Text="{x:Bind Loc.TrafficTrend, Mode=OneWay}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="14"
+                                    VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Width="10" Height="10" CornerRadius="2" Background="DeepSkyBlue" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding [Upload]}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                                <Border Width="10" Height="10" CornerRadius="2"
+                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                        VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Bind Loc.Upload, Mode=OneWay}"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           VerticalAlignment="Center" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Width="10" Height="10" CornerRadius="2" Background="MediumSeaGreen" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding [Download]}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                                <Border Width="10" Height="10" CornerRadius="2"
+                                        Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                        VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Bind Loc.Download, Mode=OneWay}"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           VerticalAlignment="Center" />
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -129,36 +171,67 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Column="1" Style="{StaticResource CardBorder}">
+            <!-- 运行信息 -->
+            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="12">
-                    <TextBlock Text="{Binding [RuntimeInfo]}" FontSize="16" FontWeight="SemiBold" />
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [ProxyMode]}" />
-                        <TextBlock x:Name="ModeText" Grid.Column="1" Style="{StaticResource InfoValue}" Text="-" />
+                    <TextBlock Text="{x:Bind Loc.RuntimeInfo, Mode=OneWay}"
+                               FontSize="16"
+                               FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.ProxyMode, Mode=OneWay}" />
+                        <TextBlock x:Name="ModeText"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="-" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [MixedPort]}" />
-                        <TextBlock x:Name="MixedPortText" Grid.Column="1" Style="{StaticResource InfoValue}" Text="-" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.MixedPort, Mode=OneWay}" />
+                        <TextBlock x:Name="MixedPortText"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="-" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [TotalUpload]}" />
-                        <TextBlock x:Name="TotalUploadText" Grid.Column="1" Style="{StaticResource InfoValue}" Text="0.00 B" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.TotalUpload, Mode=OneWay}" />
+                        <TextBlock x:Name="TotalUploadText"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="0.00 B" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [TotalDownload]}" />
-                        <TextBlock x:Name="TotalDownloadText" Grid.Column="1" Style="{StaticResource InfoValue}" Text="0.00 B" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.TotalDownload, Mode=OneWay}" />
+                        <TextBlock x:Name="TotalDownloadText"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="0.00 B" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [AllowLAN]}" />
-                        <TextBlock x:Name="AllowLanText" Grid.Column="1" Style="{StaticResource InfoValue}" Text="-" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.AllowLAN, Mode=OneWay}" />
+                        <TextBlock x:Name="AllowLanText"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="-" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [IPV6]}" />
-                        <TextBlock x:Name="Ipv6Text" Grid.Column="1" Style="{StaticResource InfoValue}" Text="-" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.IPV6, Mode=OneWay}" />
+                        <TextBlock x:Name="Ipv6Text"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="-" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Style="{StaticResource InfoLabel}" Text="{Binding [CoreVersion]}" />
-                        <TextBlock x:Name="CoreVersionText" Grid.Column="1" Style="{StaticResource InfoValue}" Text="-" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                        <TextBlock Style="{StaticResource InfoLabel}"
+                                   Text="{x:Bind Loc.CoreVersion, Mode=OneWay}" />
+                        <TextBlock x:Name="CoreVersionText"
+                                   Grid.Column="1"
+                                   Style="{StaticResource InfoValue}"
+                                   Text="-" />
                     </Grid>
                 </StackPanel>
             </Border>

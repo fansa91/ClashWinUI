@@ -100,6 +100,14 @@ namespace ClashDotNetFramework.Models.Items
             NotifyPropertyChanged("IsSelected");
         }
 
+        /// <summary>
+        /// 主题切换后刷新延迟语义色
+        /// </summary>
+        public void NotifyLatencyChange()
+        {
+            NotifyPropertyChanged(nameof(Latency));
+        }
+
         #endregion
     }
 }

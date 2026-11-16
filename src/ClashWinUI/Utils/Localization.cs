@@ -4,11 +4,16 @@ using System.ComponentModel;
 
 namespace ClashDotNetFramework.Utils
 {
+    /// <summary>
+    /// 本地化字符串表。
+    /// 字典项同时暴露为强类型属性，以便在 XAML 中使用编译期绑定 {x:Bind Loc.Key}，
+    /// 既获得 x:Bind 的性能与编译期校验，又能在切换语言时通过 INotifyPropertyChanged 实时刷新。
+    /// </summary>
     public class Localization : INotifyPropertyChanged
     {
         public static Localization Instance { get; } = new Localization();
 
-        private Dictionary<string, string> _strings = Chinese;
+        private Dictionary<string, string> _strings = ChineseStrings;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -18,14 +23,208 @@ namespace ClashDotNetFramework.Utils
         {
             _strings = language switch
             {
-                LanguageType.Chinese => Chinese,
-                LanguageType.Japanese => Japanese,
-                _ => English
+                LanguageType.Chinese => ChineseStrings,
+                LanguageType.Japanese => JapaneseStrings,
+                _ => EnglishStrings
             };
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+
+            // 逐个通知强类型属性，x:Bind(OneWay) 才能在语言切换时同步刷新界面
+            foreach (var key in _strings.Keys)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
         }
 
-        private static readonly Dictionary<string, string> English = new()
+        private string T(string key) => _strings.TryGetValue(key, out var value) ? value : key;
+
+        #region 强类型字符串
+
+        public string Overview => T(nameof(Overview));
+        public string Proxies => T(nameof(Proxies));
+        public string Profiles => T(nameof(Profiles));
+        public string Rules => T(nameof(Rules));
+        public string Logs => T(nameof(Logs));
+        public string Connections => T(nameof(Connections));
+        public string Settings => T(nameof(Settings));
+        public string Support => T(nameof(Support));
+        public string DownloadFromURL => T(nameof(DownloadFromURL));
+        public string Download => T(nameof(Download));
+        public string UpdateAll => T(nameof(UpdateAll));
+        public string Import => T(nameof(Import));
+        public string SelectProfile => T(nameof(SelectProfile));
+        public string UpdateProfile => T(nameof(UpdateProfile));
+        public string EditProfile => T(nameof(EditProfile));
+        public string DuplicateProfile => T(nameof(DuplicateProfile));
+        public string GoToURL => T(nameof(GoToURL));
+        public string ProfileSettings => T(nameof(ProfileSettings));
+        public string DeleteProfile => T(nameof(DeleteProfile));
+        public string Clear => T(nameof(Clear));
+        public string Start => T(nameof(Start));
+        public string Stop => T(nameof(Stop));
+        public string CloseAll => T(nameof(CloseAll));
+        public string CheckMMDBUpdate => T(nameof(CheckMMDBUpdate));
+        public string ResetAllSettings => T(nameof(ResetAllSettings));
+        public string ControllerPort => T(nameof(ControllerPort));
+        public string MixedPort => T(nameof(MixedPort));
+        public string LogLevel => T(nameof(LogLevel));
+        public string AllowLAN => T(nameof(AllowLAN));
+        public string IPV6 => T(nameof(IPV6));
+        public string StartWithWindows => T(nameof(StartWithWindows));
+        public string UWPLoopback => T(nameof(UWPLoopback));
+        public string TunMode => T(nameof(TunMode));
+        public string TunModeHint => T(nameof(TunModeHint));
+        public string Install => T(nameof(Install));
+        public string Theme => T(nameof(Theme));
+        public string Language => T(nameof(Language));
+        public string SystemProxy => T(nameof(SystemProxy));
+        public string Developer => T(nameof(Developer));
+        public string Help => T(nameof(Help));
+        public string Credits => T(nameof(Credits));
+        public string Donate => T(nameof(Donate));
+        public string Advertisement => T(nameof(Advertisement));
+        public string EditProfileInformation => T(nameof(EditProfileInformation));
+        public string Name => T(nameof(Name));
+        public string URL => T(nameof(URL));
+        public string UpdateInterval => T(nameof(UpdateInterval));
+        public string InputNewFileName => T(nameof(InputNewFileName));
+        public string Ok => T(nameof(Ok));
+        public string Cancel => T(nameof(Cancel));
+        public string Direct => T(nameof(Direct));
+        public string Rule => T(nameof(Rule));
+        public string Global => T(nameof(Global));
+        public string Test => T(nameof(Test));
+        public string Connected => T(nameof(Connected));
+        public string Disconnected => T(nameof(Disconnected));
+        public string CoreVersion => T(nameof(CoreVersion));
+        public string Classic => T(nameof(Classic));
+        public string Modern => T(nameof(Modern));
+        public string Dark => T(nameof(Dark));
+        public string English => T(nameof(English));
+        public string Chinese => T(nameof(Chinese));
+        public string Japanese => T(nameof(Japanese));
+        public string Update => T(nameof(Update));
+        public string Version => T(nameof(Version));
+        public string Upload => T(nameof(Upload));
+        public string UploadSpeed => T(nameof(UploadSpeed));
+        public string DownloadSpeed => T(nameof(DownloadSpeed));
+        public string ActiveConnections => T(nameof(ActiveConnections));
+        public string Uptime => T(nameof(Uptime));
+        public string TotalUpload => T(nameof(TotalUpload));
+        public string TotalDownload => T(nameof(TotalDownload));
+        public string ProxyMode => T(nameof(ProxyMode));
+        public string TrafficTrend => T(nameof(TrafficTrend));
+        public string RuntimeInfo => T(nameof(RuntimeInfo));
+        public string Yes => T(nameof(Yes));
+        public string No => T(nameof(No));
+        public string StartCore => T(nameof(StartCore));
+        public string StopCore => T(nameof(StopCore));
+        public string RuleType => T(nameof(RuleType));
+        public string RulePayload => T(nameof(RulePayload));
+        public string RuleProxy => T(nameof(RuleProxy));
+        public string Total => T(nameof(Total));
+
+        // 新增：重构后的界面所需文案
+        public string Search => T(nameof(Search));
+        public string SearchPlaceholder => T(nameof(SearchPlaceholder));
+        public string Pause => T(nameof(Pause));
+        public string Resume => T(nameof(Resume));
+        public string AllLevels => T(nameof(AllLevels));
+        public string Level => T(nameof(Level));
+        public string All => T(nameof(All));
+        public string Info => T(nameof(Info));
+        public string Warning => T(nameof(Warning));
+        public string Error => T(nameof(Error));
+        public string Debug => T(nameof(Debug));
+        public string Traffic => T(nameof(Traffic));
+        public string TrafficUsed => T(nameof(TrafficUsed));
+        public string TrafficTotal => T(nameof(TrafficTotal));
+        public string Latency => T(nameof(Latency));
+        public string Untested => T(nameof(Untested));
+        public string Timeout => T(nameof(Timeout));
+        public string Activate => T(nameof(Activate));
+        public string Activated => T(nameof(Activated));
+        public string UpdatedAt => T(nameof(UpdatedAt));
+        public string ProxyCount => T(nameof(ProxyCount));
+        public string GroupCount => T(nameof(GroupCount));
+        public string RuleCount => T(nameof(RuleCount));
+        public string NoData => T(nameof(NoData));
+        public string Advanced => T(nameof(Advanced));
+        public string General => T(nameof(General));
+        public string Mode => T(nameof(Mode));
+        public string Network => T(nameof(Network));
+        public string Subscription => T(nameof(Subscription));
+        public string Ports => T(nameof(Ports));
+        public string Protocol => T(nameof(Protocol));
+        public string Selected => T(nameof(Selected));
+        public string Duration => T(nameof(Duration));
+        public string Copy => T(nameof(Copy));
+        public string Copied => T(nameof(Copied));
+        public string Appearance => T(nameof(Appearance));
+        public string About => T(nameof(About));
+        public string DataDirectory => T(nameof(DataDirectory));
+        public string SearchNodes => T(nameof(SearchNodes));
+        public string TCP => T(nameof(TCP));
+        public string UDP => T(nameof(UDP));
+
+        // 网络增强 (ConfigInjector)
+        public string NetworkBoost => T(nameof(NetworkBoost));
+        public string NetworkBoostHint => T(nameof(NetworkBoostHint));
+        public string Sniffer => T(nameof(Sniffer));
+        public string TcpConcurrent => T(nameof(TcpConcurrent));
+        public string UnifiedDelay => T(nameof(UnifiedDelay));
+        public string FindProcessMode => T(nameof(FindProcessMode));
+        public string StoreSelected => T(nameof(StoreSelected));
+        public string StoreFakeIp => T(nameof(StoreFakeIp));
+        public string GeoAutoUpdate => T(nameof(GeoAutoUpdate));
+        public string GeoUpdateInterval => T(nameof(GeoUpdateInterval));
+
+        // 局域网访问控制 / 域名映射 / DNS 高级 / 自定义片段 (P2-P3)
+        public string LanAccess => T(nameof(LanAccess));
+        public string LanAuth => T(nameof(LanAuth));
+        public string LanAuthUser => T(nameof(LanAuthUser));
+        public string LanAuthPassword => T(nameof(LanAuthPassword));
+        public string LanSkipAuth => T(nameof(LanSkipAuth));
+        public string LanAllowedIps => T(nameof(LanAllowedIps));
+        public string LanDisallowedIps => T(nameof(LanDisallowedIps));
+        public string LanAuthHint => T(nameof(LanAuthHint));
+        public string LanAuthNeedCredential => T(nameof(LanAuthNeedCredential));
+        public string MappingForward => T(nameof(MappingForward));
+        public string CustomHosts => T(nameof(CustomHosts));
+        public string HostsHint => T(nameof(HostsHint));
+        public string CustomTunnels => T(nameof(CustomTunnels));
+        public string TunnelsHint => T(nameof(TunnelsHint));
+        public string DnsAdvanced => T(nameof(DnsAdvanced));
+        public string DnsEnhancedMode => T(nameof(DnsEnhancedMode));
+        public string DnsKeep => T(nameof(DnsKeep));
+        public string DnsNameserver => T(nameof(DnsNameserver));
+        public string DnsDefaultNameserver => T(nameof(DnsDefaultNameserver));
+        public string DnsFallback => T(nameof(DnsFallback));
+        public string DnsPolicy => T(nameof(DnsPolicy));
+        public string DnsFakeIpFilter => T(nameof(DnsFakeIpFilter));
+        public string DnsHint => T(nameof(DnsHint));
+        public string CustomSnippet => T(nameof(CustomSnippet));
+        public string SnippetHint => T(nameof(SnippetHint));
+
+        // 空状态与文案细化
+        public string NoProxies => T(nameof(NoProxies));
+        public string NoRules => T(nameof(NoRules));
+        public string NoConnections => T(nameof(NoConnections));
+        public string NoLogs => T(nameof(NoLogs));
+        public string NodesCount => T(nameof(NodesCount));
+        public string CoreStatus => T(nameof(CoreStatus));
+        public string Enable => T(nameof(Enable));
+        public string Reset => T(nameof(Reset));
+        public string Expand => T(nameof(Expand));
+        public string Collapse => T(nameof(Collapse));
+        public string On => T(nameof(On));
+        public string Off => T(nameof(Off));
+        public string CopyUrl => T(nameof(CopyUrl));
+        public string PortsHint => T(nameof(PortsHint));
+        public string TargetProfile => T(nameof(TargetProfile));
+
+        #endregion
+
+        private static readonly Dictionary<string, string> EnglishStrings = new()
         {
             ["Overview"] = "Overview",
             ["Proxies"] = "Proxies",
@@ -50,16 +249,17 @@ namespace ClashDotNetFramework.Utils
             ["Start"] = "Start",
             ["Stop"] = "Stop",
             ["CloseAll"] = "Close All",
-            ["CheckMMDBUpdate"] = "Check MMDB Update",
-            ["ResetAllSettings"] = "Reset All Settings",
+            ["CheckMMDBUpdate"] = "GeoIP Database (MMDB)",
+            ["ResetAllSettings"] = "Restore Defaults",
             ["ControllerPort"] = "Controller Port",
             ["MixedPort"] = "Mixed Port",
             ["LogLevel"] = "Log Level",
             ["AllowLAN"] = "Allow LAN",
-            ["IPV6"] = "IPV6",
+            ["IPV6"] = "IPv6",
             ["StartWithWindows"] = "Start with Windows",
-            ["UWPLoopback"] = "UWP Loopback",
+            ["UWPLoopback"] = "UWP Loopback Exemption",
             ["TunMode"] = "TUN Mode",
+            ["TunModeHint"] = "Takes over all traffic inside the core, so no system proxy is needed. Enabling it turns the system proxy off automatically; requires administrator rights.",
             ["Install"] = "Install",
             ["Theme"] = "Theme",
             ["Language"] = "Language",
@@ -83,8 +283,8 @@ namespace ClashDotNetFramework.Utils
             ["Connected"] = "Connected",
             ["Disconnected"] = "Disconnected",
             ["CoreVersion"] = "Core Version",
-            ["Classic"] = "Classic",
-            ["Modern"] = "Modern",
+            ["Classic"] = "Light (Classic)",
+            ["Modern"] = "Light (Modern)",
             ["Dark"] = "Dark",
             ["English"] = "English",
             ["Chinese"] = "Chinese",
@@ -108,10 +308,102 @@ namespace ClashDotNetFramework.Utils
             ["RuleType"] = "Type",
             ["RulePayload"] = "Payload",
             ["RuleProxy"] = "Proxy",
-            ["Total"] = "Total"
+            ["Total"] = "Total",
+            ["Search"] = "Search",
+            ["SearchPlaceholder"] = "Type to search…",
+            ["Pause"] = "Pause",
+            ["Resume"] = "Resume",
+            ["AllLevels"] = "All Levels",
+            ["Level"] = "Level",
+            ["All"] = "All",
+            ["Info"] = "Info",
+            ["Warning"] = "Warning",
+            ["Error"] = "Error",
+            ["Debug"] = "Debug",
+            ["Traffic"] = "Traffic",
+            ["TrafficUsed"] = "Used",
+            ["TrafficTotal"] = "Total",
+            ["Latency"] = "Latency",
+            ["Untested"] = "Untested",
+            ["Timeout"] = "Timeout",
+            ["Activate"] = "Activate",
+            ["Activated"] = "Activated",
+            ["UpdatedAt"] = "Updated",
+            ["ProxyCount"] = "Proxies",
+            ["GroupCount"] = "Groups",
+            ["RuleCount"] = "Rules",
+            ["NoData"] = "No data",
+            ["Advanced"] = "Advanced",
+            ["General"] = "General",
+            ["Mode"] = "Mode",
+            ["Network"] = "Network",
+            ["Subscription"] = "Subscription",
+            ["TargetProfile"] = "Target:",
+            ["PortsHint"] = "Click a port to copy its address to the clipboard.",
+            ["Expand"] = "Expand",
+            ["Collapse"] = "Collapse",
+            ["Ports"] = "Ports",
+            ["Protocol"] = "Protocol",
+            ["Selected"] = "Selected",
+            ["Duration"] = "Duration",
+            ["Copy"] = "Copy",
+            ["Copied"] = "Copied",
+            ["Appearance"] = "Appearance",
+            ["About"] = "About",
+            ["DataDirectory"] = "Data Directory",
+            ["SearchNodes"] = "Search nodes…",
+            // 网络增强
+            ["NetworkBoost"] = "Network Boost",
+            ["NetworkBoostHint"] = "Changes are written into the active profile and applied immediately",
+            ["Sniffer"] = "Domain Sniffer",
+            ["TcpConcurrent"] = "TCP Concurrent",
+            ["UnifiedDelay"] = "Unified Delay",
+            ["FindProcessMode"] = "Process Matching",
+            ["StoreSelected"] = "Remember Selection",
+            ["StoreFakeIp"] = "Remember Fake-IP",
+            ["GeoAutoUpdate"] = "Auto Update GeoData",
+            ["GeoUpdateInterval"] = "Update Interval (hours)",
+            // 局域网 / 映射 / DNS / 片段
+            ["LanAccess"] = "LAN Access",
+            ["LanAuth"] = "Proxy Authentication",
+            ["LanAuthUser"] = "Username",
+            ["LanAuthPassword"] = "Password",
+            ["LanSkipAuth"] = "Skip Auth For",
+            ["LanAllowedIps"] = "Allowed Ranges",
+            ["LanDisallowedIps"] = "Blocked Ranges",
+            ["LanAuthHint"] = "Applies to the proxy port only, not the control API. Loopback (127.0.0.1 / ::1) is always exempt, so the Windows system proxy keeps working; only other LAN devices are asked for credentials. \"Allowed Ranges\" stays unrestricted when empty.",
+            ["LanAuthNeedCredential"] = "Set a username and password first, otherwise the proxy port becomes unusable.",
+            ["MappingForward"] = "Host Mapping & Port Forwarding",
+            ["CustomHosts"] = "Custom hosts",
+            ["HostsHint"] = "One entry per line: domain, a space, then an IP. Entries added here are tracked and removed cleanly; hosts shipped with a profile are kept.",
+            ["CustomTunnels"] = "Port forwarding",
+            ["TunnelsHint"] = "One entry per line: network,listen,target — for example tcp,127.0.0.1:6553,127.0.0.1:80",
+            ["DnsAdvanced"] = "Advanced DNS",
+            ["DnsEnhancedMode"] = "Enhanced Mode",
+            ["DnsKeep"] = "Leave unchanged",
+            ["DnsNameserver"] = "Nameservers",
+            ["DnsDefaultNameserver"] = "Default Nameservers",
+            ["DnsFallback"] = "Fallback",
+            ["DnsPolicy"] = "Domain Policy",
+            ["DnsFakeIpFilter"] = "Fake-IP Filter",
+            ["DnsHint"] = "Leave a field empty to keep the profile value. Lines starting with # are ignored.",
+            ["CustomSnippet"] = "Custom Configuration",
+            ["SnippetHint"] = "Raw YAML top-level blocks. A block replaces the same key in the profile, or is appended when missing. Useful for listeners, proxy-providers, sub-rules and tls.",
+            // Empty states and refined labels
+            ["NoProxies"] = "No proxy nodes yet. Add a subscription in Profiles, then activate it.",
+            ["NoRules"] = "No rules in the active profile. Add rules through a custom snippet if needed.",
+            ["NoConnections"] = "No active connections.",
+            ["NoLogs"] = "No log entries yet.",
+            ["NodesCount"] = "{0} nodes",
+            ["CoreStatus"] = "Core",
+            ["Enable"] = "Enable",
+            ["Reset"] = "Reset",
+            ["On"] = "On",
+            ["Off"] = "Off",
+            ["CopyUrl"] = "Copy URL"
         };
 
-        private static readonly Dictionary<string, string> Chinese = new()
+        private static readonly Dictionary<string, string> ChineseStrings = new()
         {
             ["Overview"] = "概览",
             ["Proxies"] = "代理",
@@ -136,16 +428,17 @@ namespace ClashDotNetFramework.Utils
             ["Start"] = "开始",
             ["Stop"] = "停止",
             ["CloseAll"] = "关闭全部",
-            ["CheckMMDBUpdate"] = "检查 MMDB 更新",
-            ["ResetAllSettings"] = "重置所有设置",
+            ["CheckMMDBUpdate"] = "GeoIP 数据库（MMDB）",
+            ["ResetAllSettings"] = "恢复默认设置",
             ["ControllerPort"] = "控制端口",
             ["MixedPort"] = "混合端口",
             ["LogLevel"] = "日志等级",
             ["AllowLAN"] = "允许局域网",
-            ["IPV6"] = "IPV6",
+            ["IPV6"] = "IPv6",
             ["StartWithWindows"] = "开机启动",
-            ["UWPLoopback"] = "UWP 回环",
+            ["UWPLoopback"] = "UWP 应用回环豁免",
             ["TunMode"] = "TUN 模式",
+            ["TunModeHint"] = "由内核在本机直接接管全部流量，不再需要系统代理；开启时会自动关闭系统代理，需要管理员权限。",
             ["Install"] = "安装",
             ["Theme"] = "主题",
             ["Language"] = "语言",
@@ -169,8 +462,8 @@ namespace ClashDotNetFramework.Utils
             ["Connected"] = "已连接",
             ["Disconnected"] = "未连接",
             ["CoreVersion"] = "核心版本",
-            ["Classic"] = "经典",
-            ["Modern"] = "现代",
+            ["Classic"] = "浅色（经典）",
+            ["Modern"] = "浅色（现代）",
             ["Dark"] = "深色",
             ["English"] = "英语",
             ["Chinese"] = "中文",
@@ -194,10 +487,102 @@ namespace ClashDotNetFramework.Utils
             ["RuleType"] = "类型",
             ["RulePayload"] = "匹配内容",
             ["RuleProxy"] = "代理",
-            ["Total"] = "总计"
+            ["Total"] = "总计",
+            ["Search"] = "搜索",
+            ["SearchPlaceholder"] = "输入关键字搜索…",
+            ["Pause"] = "暂停",
+            ["Resume"] = "继续",
+            ["AllLevels"] = "全部等级",
+            ["Level"] = "等级",
+            ["All"] = "全部",
+            ["Info"] = "信息",
+            ["Warning"] = "警告",
+            ["Error"] = "错误",
+            ["Debug"] = "调试",
+            ["Traffic"] = "流量",
+            ["TrafficUsed"] = "已用",
+            ["TrafficTotal"] = "总量",
+            ["Latency"] = "延迟",
+            ["Untested"] = "未测试",
+            ["Timeout"] = "超时",
+            ["Activate"] = "激活",
+            ["Activated"] = "已激活",
+            ["UpdatedAt"] = "更新时间",
+            ["ProxyCount"] = "节点数",
+            ["GroupCount"] = "策略组",
+            ["RuleCount"] = "规则数",
+            ["NoData"] = "暂无数据",
+            ["Advanced"] = "高级",
+            ["General"] = "通用",
+            ["Mode"] = "模式",
+            ["Network"] = "网络",
+            ["Subscription"] = "订阅",
+            ["TargetProfile"] = "操作对象：",
+            ["PortsHint"] = "点击端口即可把对应地址复制到剪贴板。",
+            ["Expand"] = "展开",
+            ["Collapse"] = "收起",
+            ["Ports"] = "端口",
+            ["Protocol"] = "协议",
+            ["Selected"] = "已选择",
+            ["Duration"] = "持续时间",
+            ["Copy"] = "复制",
+            ["Copied"] = "已复制",
+            ["Appearance"] = "外观",
+            ["About"] = "关于",
+            ["DataDirectory"] = "数据目录",
+            ["SearchNodes"] = "搜索节点…",
+            // 网络增强
+            ["NetworkBoost"] = "网络增强",
+            ["NetworkBoostHint"] = "修改会立即写入当前订阅并重载内核",
+            ["Sniffer"] = "域名嗅探",
+            ["TcpConcurrent"] = "TCP 并发连接",
+            ["UnifiedDelay"] = "统一延迟",
+            ["FindProcessMode"] = "进程匹配",
+            ["StoreSelected"] = "记住节点选择",
+            ["StoreFakeIp"] = "记住 fake-ip",
+            ["GeoAutoUpdate"] = "规则库自动更新",
+            ["GeoUpdateInterval"] = "更新间隔（小时）",
+            // 局域网 / 映射 / DNS / 片段
+            ["LanAccess"] = "局域网访问控制",
+            ["LanAuth"] = "代理认证",
+            ["LanAuthUser"] = "用户名",
+            ["LanAuthPassword"] = "密码",
+            ["LanSkipAuth"] = "跳过认证的网段",
+            ["LanAllowedIps"] = "允许的网段",
+            ["LanDisallowedIps"] = "禁止的网段",
+            ["LanAuthHint"] = "只作用于代理端口，与控制 API 无关。本机回环（127.0.0.1 / ::1）始终免认证，Windows 系统代理不受影响，只有其他局域网设备需要输入账号密码。「允许的网段」留空表示不限制。",
+            ["LanAuthNeedCredential"] = "请先填写用户名和密码，否则代理端口将无法使用。",
+            ["MappingForward"] = "域名映射与端口转发",
+            ["CustomHosts"] = "自定义 hosts",
+            ["HostsHint"] = "每行一条：域名 空格 IP。此处添加的条目会被记录并在删除时清理，订阅自带的 hosts 会保留。",
+            ["CustomTunnels"] = "端口转发",
+            ["TunnelsHint"] = "每行一条：网络,监听地址,目标地址，例如 tcp,127.0.0.1:6553,127.0.0.1:80",
+            ["DnsAdvanced"] = "DNS 高级",
+            ["DnsEnhancedMode"] = "增强模式",
+            ["DnsKeep"] = "不修改",
+            ["DnsNameserver"] = "主 DNS",
+            ["DnsDefaultNameserver"] = "默认 DNS",
+            ["DnsFallback"] = "备用 DNS",
+            ["DnsPolicy"] = "按域名指定",
+            ["DnsFakeIpFilter"] = "fake-ip 过滤",
+            ["DnsHint"] = "留空表示沿用订阅中的设置；以 # 开头的行会被忽略。",
+            ["CustomSnippet"] = "自定义配置片段",
+            ["SnippetHint"] = "直接写 YAML 顶层块：与订阅中的同名键会整体替换，不存在则追加。可用于 listeners、proxy-providers、sub-rules、tls 等。",
+            // 空状态与文案细化
+            ["NoProxies"] = "还没有代理节点。请先在「配置」中添加并激活一个订阅。",
+            ["NoRules"] = "当前订阅没有规则。如有需要，可通过「自定义配置片段」补充。",
+            ["NoConnections"] = "当前没有活跃连接。",
+            ["NoLogs"] = "暂无日志。",
+            ["NodesCount"] = "{0} 个节点",
+            ["CoreStatus"] = "内核",
+            ["Enable"] = "启用",
+            ["Reset"] = "重置",
+            ["On"] = "开",
+            ["Off"] = "关",
+            ["CopyUrl"] = "复制链接"
         };
 
-        private static readonly Dictionary<string, string> Japanese = new()
+        private static readonly Dictionary<string, string> JapaneseStrings = new()
         {
             ["Overview"] = "概要",
             ["Proxies"] = "プロキシ",
@@ -222,16 +607,17 @@ namespace ClashDotNetFramework.Utils
             ["Start"] = "開始",
             ["Stop"] = "停止",
             ["CloseAll"] = "すべて閉じる",
-            ["CheckMMDBUpdate"] = "MMDB 更新確認",
-            ["ResetAllSettings"] = "設定をリセット",
+            ["CheckMMDBUpdate"] = "GeoIP データベース（MMDB）",
+            ["ResetAllSettings"] = "既定値に戻す",
             ["ControllerPort"] = "制御ポート",
             ["MixedPort"] = "混合ポート",
             ["LogLevel"] = "ログレベル",
             ["AllowLAN"] = "LAN 許可",
-            ["IPV6"] = "IPV6",
+            ["IPV6"] = "IPv6",
             ["StartWithWindows"] = "Windows 起動時に開始",
-            ["UWPLoopback"] = "UWP ループバック",
+            ["UWPLoopback"] = "UWP ループバック除外",
             ["TunMode"] = "TUN モード",
+            ["TunModeHint"] = "コアが本機の全トラフィックを直接引き受けるため、システムプロキシは不要です。有効にするとシステムプロキシは自動的にオフになり、管理者権限が必要です。",
             ["Install"] = "インストール",
             ["Theme"] = "テーマ",
             ["Language"] = "言語",
@@ -255,8 +641,8 @@ namespace ClashDotNetFramework.Utils
             ["Connected"] = "接続済み",
             ["Disconnected"] = "未接続",
             ["CoreVersion"] = "コアバージョン",
-            ["Classic"] = "クラシック",
-            ["Modern"] = "モダン",
+            ["Classic"] = "ライト（クラシック）",
+            ["Modern"] = "ライト（モダン）",
             ["Dark"] = "ダーク",
             ["English"] = "英語",
             ["Chinese"] = "中国語",
@@ -280,7 +666,99 @@ namespace ClashDotNetFramework.Utils
             ["RuleType"] = "タイプ",
             ["RulePayload"] = "ペイロード",
             ["RuleProxy"] = "プロキシ",
-            ["Total"] = "合計"
+            ["Total"] = "合計",
+            ["Search"] = "検索",
+            ["SearchPlaceholder"] = "キーワードを入力…",
+            ["Pause"] = "一時停止",
+            ["Resume"] = "再開",
+            ["AllLevels"] = "すべてのレベル",
+            ["Level"] = "レベル",
+            ["All"] = "すべて",
+            ["Info"] = "情報",
+            ["Warning"] = "警告",
+            ["Error"] = "エラー",
+            ["Debug"] = "デバッグ",
+            ["Traffic"] = "トラフィック",
+            ["TrafficUsed"] = "使用量",
+            ["TrafficTotal"] = "合計量",
+            ["Latency"] = "レイテンシ",
+            ["Untested"] = "未テスト",
+            ["Timeout"] = "タイムアウト",
+            ["Activate"] = "有効化",
+            ["Activated"] = "有効",
+            ["UpdatedAt"] = "更新日時",
+            ["ProxyCount"] = "プロキシ数",
+            ["GroupCount"] = "グループ数",
+            ["RuleCount"] = "ルール数",
+            ["NoData"] = "データなし",
+            ["Advanced"] = "詳細設定",
+            ["General"] = "一般",
+            ["Mode"] = "モード",
+            ["Network"] = "ネットワーク",
+            ["Subscription"] = "サブスクリプション",
+            ["TargetProfile"] = "対象：",
+            ["PortsHint"] = "ポートをクリックすると、対応するアドレスをクリップボードにコピーします。",
+            ["Expand"] = "展開",
+            ["Collapse"] = "折りたたむ",
+            ["Ports"] = "ポート",
+            ["Protocol"] = "プロトコル",
+            ["Selected"] = "選択済み",
+            ["Duration"] = "継続時間",
+            ["Copy"] = "コピー",
+            ["Copied"] = "コピーしました",
+            ["Appearance"] = "外観",
+            ["About"] = "情報",
+            ["DataDirectory"] = "データディレクトリ",
+            ["SearchNodes"] = "ノードを検索…",
+            // ネットワーク拡張
+            ["NetworkBoost"] = "ネットワーク拡張",
+            ["NetworkBoostHint"] = "変更は現在のプロファイルに書き込まれ、即時反映されます",
+            ["Sniffer"] = "ドメインスニッフ",
+            ["TcpConcurrent"] = "TCP 並列接続",
+            ["UnifiedDelay"] = "レイテンシ統一",
+            ["FindProcessMode"] = "プロセス照合",
+            ["StoreSelected"] = "選択を記憶",
+            ["StoreFakeIp"] = "Fake-IP を記憶",
+            ["GeoAutoUpdate"] = "GeoData 自動更新",
+            ["GeoUpdateInterval"] = "更新間隔（時間）",
+            // LAN / マッピング / DNS / スニペット
+            ["LanAccess"] = "LAN アクセス制御",
+            ["LanAuth"] = "プロキシ認証",
+            ["LanAuthUser"] = "ユーザー名",
+            ["LanAuthPassword"] = "パスワード",
+            ["LanSkipAuth"] = "認証を除外する範囲",
+            ["LanAllowedIps"] = "許可する範囲",
+            ["LanDisallowedIps"] = "拒否する範囲",
+            ["LanAuthHint"] = "プロキシポートにのみ適用され、制御 API には影響しません。ループバック（127.0.0.1 / ::1）は常に認証を免除されるため Windows のシステムプロキシは影響を受けず、他の LAN 端末のみ認証が必要です。「許可する範囲」が空の場合は制限なしです。",
+            ["LanAuthNeedCredential"] = "ユーザー名とパスワードを先に入力してください。入力しないとプロキシポートが使用できなくなります。",
+            ["MappingForward"] = "ホストマッピングとポート転送",
+            ["CustomHosts"] = "カスタム hosts",
+            ["HostsHint"] = "1 行に 1 件：ドメイン 空白 IP。ここで追加した項目は記録され、削除時に整理されます。プロファイル元の hosts は保持されます。",
+            ["CustomTunnels"] = "ポート転送",
+            ["TunnelsHint"] = "1 行に 1 件：プロトコル,待受,転送先。例：tcp,127.0.0.1:6553,127.0.0.1:80",
+            ["DnsAdvanced"] = "DNS 詳細設定",
+            ["DnsEnhancedMode"] = "拡張モード",
+            ["DnsKeep"] = "変更しない",
+            ["DnsNameserver"] = "ネームサーバー",
+            ["DnsDefaultNameserver"] = "既定のネームサーバー",
+            ["DnsFallback"] = "フォールバック",
+            ["DnsPolicy"] = "ドメイン別ポリシー",
+            ["DnsFakeIpFilter"] = "Fake-IP フィルター",
+            ["DnsHint"] = "空欄はプロファイルの設定を維持します。# で始まる行は無視されます。",
+            ["CustomSnippet"] = "カスタム設定",
+            ["SnippetHint"] = "YAML のトップレベルブロックを記述します。同じキーは置き換え、存在しない場合は追加されます。listeners、proxy-providers、sub-rules、tls などに使えます。",
+            // 空状態とラベル調整
+            ["NoProxies"] = "プロキシノードがありません。「プロファイル」で購読を追加し、有効化してください。",
+            ["NoRules"] = "現在のプロファイルにルールがありません。必要なら「カスタム設定」で追加できます。",
+            ["NoConnections"] = "アクティブな接続はありません。",
+            ["NoLogs"] = "ログはまだありません。",
+            ["NodesCount"] = "{0} ノード",
+            ["CoreStatus"] = "コア",
+            ["Enable"] = "有効化",
+            ["Reset"] = "リセット",
+            ["On"] = "オン",
+            ["Off"] = "オフ",
+            ["CopyUrl"] = "URL をコピー"
         };
     }
 }

@@ -16,6 +16,11 @@ namespace ClashDotNetFramework
 
         public static Color ProxyColor = Color.FromArgb((byte)Math.Round(0.9 * 255), 179, 179, 179);
 
+        /// <summary>
+        /// 当前是否为深色主题，供无法直接访问 ThemeResource 的代码 (转换器等) 判断配色
+        /// </summary>
+        public static bool IsDarkTheme { get; set; } = false;
+
         public static int ClashControllerPort = 0;
 
         public static int ClashMixedPort = 0;
