@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -22,7 +22,7 @@ namespace ClashDotNetFramework.Utils
         public static void Set()
         {
             using var k = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{Key}");
-            k.SetValue("", "URL:Clash .NET Framework");
+            k.SetValue("", "URL:ClashWinUI");
             k.SetValue("URL Protocol", "");
             using var cmd = k.CreateSubKey(@"shell\open\command");
             cmd.SetValue("", $"\"{ExePath}\" \"%1\"");

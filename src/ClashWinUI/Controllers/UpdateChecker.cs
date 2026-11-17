@@ -1,4 +1,4 @@
-﻿using ClashDotNetFramework.Models.GitHubRelease;
+using ClashDotNetFramework.Models.GitHubRelease;
 using ClashDotNetFramework.Utils;
 using Newtonsoft.Json;
 using System;
@@ -18,7 +18,7 @@ namespace ClashDotNetFramework.Controllers
         public const string Owner = @"fansa91";
         public const string Repo = @"ClashWinUI";
 
-        public const string Name = @"Clash .NET Framework";
+        public const string Name = @"ClashWinUI";
         public const string Copyright = @"Copyright © 2018 - 2021 Coel Wu";
 
         public static readonly string Version = (typeof(UpdateChecker).Assembly

@@ -1,4 +1,4 @@
-﻿using Clash.SDK.Models.Enums;
+using Clash.SDK.Models.Enums;
 using ClashDotNetFramework.Utils;
 using H.NotifyIcon;
 using Microsoft.UI.Xaml;
@@ -28,7 +28,7 @@ namespace ClashDotNetFramework.Controllers
 
             _icon = new TaskbarIcon
             {
-                ToolTipText = "Clash .NET Framework",
+                ToolTipText = "ClashWinUI",
                 ContextFlyout = _menu,
                 LeftClickCommand = new RelayCommand(ShowMainWindow),
                 MenuActivation = H.NotifyIcon.Core.PopupActivationMode.RightClick

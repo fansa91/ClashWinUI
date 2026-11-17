@@ -64,7 +64,7 @@ namespace ClashDotNetFramework
             //（实测：设置页/概览页全部无法用滚轮滚动，消息根本进不了 XAML）。
             SetTitleBar(PaneTitleBar);
 
-            Title = $"Clash .NET Framework v{UpdateChecker.Version}";
+            Title = $"ClashWinUI v{UpdateChecker.Version}";
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1180, 800));
 
             // 窗口 / 任务栏 / 资源管理器图标：Assets 里现成的 AppLogo.ico（多尺寸 16-256）

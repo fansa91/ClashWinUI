@@ -1,4 +1,4 @@
-﻿using ClashDotNetFramework.Controllers;
+using ClashDotNetFramework.Controllers;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -9,7 +9,7 @@ namespace ClashDotNetFramework.Utils
 {
     public static class WebUtil
     {
-        public static string DefaultUserAgent = $"Clash .NET Framework/{UpdateChecker.Version} .NET Framework/4.6.1";
+        public static string DefaultUserAgent = $"ClashWinUI/{UpdateChecker.Version}";
 
         static WebUtil()
         {

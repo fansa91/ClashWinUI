@@ -162,7 +162,7 @@ namespace ClashDotNetFramework.Pages
             }
             catch
             {
-                await DialogHelper.ShowMessageAsync("Clash .NET Framework", $"Load config \"{profile.Name}\" error");
+                await DialogHelper.ShowMessageAsync("ClashWinUI", $"Load config \"{profile.Name}\" error");
             }
         }
 
@@ -308,7 +308,7 @@ namespace ClashDotNetFramework.Pages
             var profile = GetProfile(sender);
             if (profile == null)
                 return;
-            bool confirm = await DialogHelper.ConfirmAsync("Clash .NET Framework", $"Are you sure to delete \"{profile.Name}\"?");
+            bool confirm = await DialogHelper.ConfirmAsync("ClashWinUI", $"Are you sure to delete \"{profile.Name}\"?");
             if (!confirm)
                 return;
             try

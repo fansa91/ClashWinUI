@@ -61,7 +61,7 @@
                                FontSize="12"
                                FontWeight="SemiBold"
                                Foreground="{ThemeResource TextPrimaryBrush}"
-                               Text="Clash .NET Framework"
+                               Text="ClashWinUI"
                                TextTrimming="CharacterEllipsis" />
                 </Grid>
             </NavigationView.PaneHeader>

@@ -80,7 +80,13 @@ GitHub Actions（`.github/workflows/build.yml`）在 push / PR / 手动触发时
 2. 矩阵发布 **self-contained** 与 **framework-dependent** 两个版本（其余发布开关保持 true）
 3. 上传 `ClashWinUI-self-contained-win-x64` / `ClashWinUI-framework-dependent-win-x64` 产物
 
-打 `v*` tag 触发时，tag 号（如 `v0.1` → `0.1`）会注入为应用版本，显示在窗口标题与设置页。版本自 `v0.1` 起步。
+打 `v*` tag 触发时，在上述流程之外额外：
+
+- tag 号（如 `v0.1` → `0.1`）注入为应用版本，显示在窗口标题与设置页
+- 产物命名为 `ClashWinUI-{版本}-{变体}-win-x64.zip`（应用名 + 版本）
+- 自动创建 GitHub Release「ClashWinUI {tag}」，附 self-contained 与 framework-dependent 两个 zip
+
+版本自 `v0.1` 起步。
 
 ## 目录结构
 

@@ -396,9 +396,9 @@ namespace ClashDotNetFramework.Pages
             {
                 using var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 if (on)
-                    key.SetValue("Clash .NET Framework", Process.GetCurrentProcess().MainModule.FileName);
+                    key.SetValue("ClashWinUI", Process.GetCurrentProcess().MainModule.FileName);
                 else
-                    key.DeleteValue("Clash .NET Framework", false);
+                    key.DeleteValue("ClashWinUI", false);
             }
             catch
             {
@@ -677,7 +677,7 @@ namespace ClashDotNetFramework.Pages
                 _loading = true;
                 ((ToggleSwitch)sender).IsOn = false;
                 _loading = false;
-                await DialogHelper.ShowMessageAsync("Clash .NET Framework", Loc.LanAuthNeedCredential);
+                await DialogHelper.ShowMessageAsync("ClashWinUI", Loc.LanAuthNeedCredential);
                 return;
             }
 

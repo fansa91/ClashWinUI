@@ -104,9 +104,39 @@ jobs:
 
       - name: Pack artifact
         shell: pwsh
-        run: Compress-Archive -Path publish/* -DestinationPath "ClashWinUI-${{ matrix.variant }}-win-x64.zip"
+        run: |
+          # 打 v* tag 时产物名带上版本（应用名+版本），普通构建保持原命名
+          $name = 'ClashWinUI-${{ matrix.variant }}-win-x64'
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $name = "ClashWinUI-$($env:GITHUB_REF.Substring('refs/tags/v'.Length))-${{ matrix.variant }}-win-x64"
+          }
+          Compress-Archive -Path publish/* -DestinationPath "$name.zip"
+          Write-Host "packed: $name.zip"
 
       - uses: actions/upload-artifact@v4
         with:
           name: ClashWinUI-${{ matrix.variant }}-win-x64
-          path: ClashWinUI-${{ matrix.variant }}-win-x64.zip
+          path: ClashWinUI-*-${{ matrix.variant }}-win-x64.zip
+
+  release:
+    # 打 v* tag 触发：汇总两个变体的产物，创建 GitHub Release（应用名 + 版本）
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "ClashWinUI $GITHUB_REF_NAME" \
+            --generate-notes
