@@ -16,16 +16,27 @@
 
 ## 截图
 
-| 概览 | 连接 |
+概览页：3 套主题 × 3 种语言（自适应卡片栅格）：
+
+| | 中文 | English | 日本語 |
+| --- | --- | --- | --- |
+| **经典** | ![经典-中文](docs/screenshots/overview-classic-zh.png) | ![经典-English](docs/screenshots/overview-classic-en.png) | ![经典-日本語](docs/screenshots/overview-classic-jp.png) |
+| **现代** | ![现代-中文](docs/screenshots/overview-modern-zh.png) | ![现代-English](docs/screenshots/overview-modern-en.png) | ![现代-日本語](docs/screenshots/overview-modern-jp.png) |
+| **深色** | ![深色-中文](docs/screenshots/overview-dark-zh.png) | ![深色-English](docs/screenshots/overview-dark-en.png) | ![深色-日本語](docs/screenshots/overview-dark-jp.png) |
+
+其余页面：
+
+| 代理 | 配置 | 支持 |
+| --- | --- | --- |
+| ![代理](docs/screenshots/proxies.png) | ![配置](docs/screenshots/profiles.png) | ![支持](docs/screenshots/support.png) |
+
+| 连接 | 规则 |
 | --- | --- |
-| ![概览](docs/screenshots/overview.png) | ![连接](docs/screenshots/connections.png) |
+| ![连接](docs/screenshots/connections.png) | ![规则](docs/screenshots/rules.png) |
 
-| 日志 | 规则 |
+| 日志 | 设置 |
 | --- | --- |
-| ![日志](docs/screenshots/logs.png) | ![规则](docs/screenshots/rules.png) |
-
-![设置](docs/screenshots/settings.png)
-
+| ![日志](docs/screenshots/logs.png) | ![设置](docs/screenshots/settings.png) |
 ## 运行要求
 
 - Windows 10 1809 (17763) 及以上，x64

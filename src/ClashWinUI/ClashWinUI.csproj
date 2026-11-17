@@ -17,6 +17,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
     <Version>0.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- FireWallHelper 仅拷贝其输出、不引用程序集，允许主项目为非自包含时引用自包含 exe -->

@@ -9,7 +9,9 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -61,6 +63,17 @@ namespace ClashDotNetFramework
 
             Title = $"Clash .NET Framework v{UpdateChecker.Version}";
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1180, 800));
+
+            // 窗口 / 任务栏 / 资源管理器图标：Assets 里现成的 AppLogo.ico（多尺寸 16-256）
+            try
+            {
+                string iconPath = Path.Combine(Global.ClashDotNetFrameworkDir, "Assets", "AppLogo.ico");
+                if (File.Exists(iconPath))
+                    AppWindow.SetIcon(iconPath);
+            }
+            catch
+            {
+            }
             // 窗口再窄会让设置页的标签列被压成 0 宽（只剩无说明的开关），这里兜住最小可用尺寸
             WindowSizing.ApplyMinimumSize(this, 940, 600);
 
@@ -88,12 +101,40 @@ namespace ClashDotNetFramework
             Global.IsDarkTheme = dark;
             RootGrid.RequestedTheme = dark ? ElementTheme.Dark : ElementTheme.Light;
 
+            ApplyAppLogo(theme);
+
             // 标题栏按钮不跟随 RequestedTheme（它绘制在窗口边框层），颜色需要手动同步
             ApplyTitleBarTheme();
 
             // 语义色由代码算出来的控件（延迟徽章、协议标签、图表画笔）不走 ThemeResource，
             // 需要主动通知重算。
             Global.Pages?.RefreshSemanticColors();
+        }
+
+        /// <summary>
+        /// 标题栏 Logo：Assets 里为三套主题各备了一份配色（经典=灰 / 现代=蓝 / 深色=白），
+        /// 随主题一起切换。全部带透明通道，直接落在 Mica 上无需底色。
+        /// </summary>
+        private void ApplyAppLogo(ThemeType theme)
+        {
+            if (AppLogoImage == null)
+                return;
+
+            try
+            {
+                string file = theme switch
+                {
+                    ThemeType.Classic => "ClassicLogo.png",
+                    ThemeType.Dark => "DarkLogo.png",
+                    _ => "ModernLogo.png"
+                };
+                string path = Path.Combine(Global.ClashDotNetFrameworkDir, "Assets", file);
+                if (File.Exists(path))
+                    AppLogoImage.Source = new BitmapImage(new Uri(path));
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>

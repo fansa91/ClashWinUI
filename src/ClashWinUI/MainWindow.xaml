@@ -44,16 +44,12 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Border Width="28"
-                            Height="28"
-                            CornerRadius="8"
-                            VerticalAlignment="Center"
-                            Background="{ThemeResource BrandPrimaryBrush}">
-                        <FontIcon Glyph="&#xE774;"
-                                  FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                  FontSize="14"
-                                  Foreground="{ThemeResource TextOnBrandBrush}" />
-                    </Border>
+                    <!-- 应用 Logo（Assets 里现成的三套主题配色，随主题切换，见 ApplyAppLogo） -->
+                    <Image x:Name="AppLogoImage"
+                           Grid.Column="0"
+                           Width="28"
+                           Height="28"
+                           VerticalAlignment="Center" />
 
                     <TextBlock x:Name="AppTitleText"
                                Grid.Column="1"
