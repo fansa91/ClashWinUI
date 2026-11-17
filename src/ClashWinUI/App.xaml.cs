@@ -39,6 +39,8 @@ namespace ClashDotNetFramework
             Resources["ProfileTypeToString"] = new ProfileTypeToStringConverter();
             Resources["RatioToPercent"] = new RatioToPercentConverter();
             Resources["NodesCount"] = new NodesCountConverter();
+            Resources["SemanticTag"] = new SemanticTagConverter();
+            Resources["RelativeTime"] = new RelativeTimeConverter();
         }
 
         public void ChangeLanguage(LanguageType language)

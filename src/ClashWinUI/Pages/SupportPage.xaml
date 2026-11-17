@@ -1,4 +1,4 @@
-<Page x:Class="ClashDotNetFramework.Pages.SupportPage"
+﻿<Page x:Class="ClashDotNetFramework.Pages.SupportPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,67 +7,221 @@
       Loaded="SupportPage_Loaded">
 
     <ScrollViewer Padding="{StaticResource PageMarginCompact}">
-        <StackPanel Spacing="16">
-            <!-- 页面标题 -->
-            <TextBlock Text="{x:Bind Loc.Support, Mode=OneWay}"
-                       Style="{StaticResource PageTitleTextBlockStyle}" />
+        <StackPanel Spacing="20" MaxWidth="900" HorizontalAlignment="Center">
 
-            <!-- 开发者 -->
-            <StackPanel Spacing="8">
+            <!-- 页面标题 -->
+            <StackPanel Spacing="2">
+                <TextBlock Text="{x:Bind Loc.Support, Mode=OneWay}"
+                           Style="{StaticResource PageTitleTextBlockStyle}" />
                 <TextBlock Text="{x:Bind Loc.Developer, Mode=OneWay}"
-                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                <TextBlock Text="TheWanderingCoel"
-                           Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
             </StackPanel>
 
-            <!-- 帮助链接 -->
+            <!-- 诊断信息 -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="10">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{x:Bind Loc.Diagnostics, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                            <TextBlock Text="{x:Bind Loc.DiagnosticHint, Mode=OneWay}"
+                                       Style="{StaticResource SecondaryCaptionTextBlockStyle}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Content="{x:Bind Loc.CopyDiagnostics, Mode=OneWay}"
+                                Click="CopyDiagnostics_Click"
+                                VerticalAlignment="Center" />
+                    </Grid>
+
+                    <Grid ColumnSpacing="24" RowSpacing="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="96" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="{x:Bind Loc.AppVersion, Mode=OneWay}"
+                                   Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   x:Name="AppVersionText"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="{x:Bind Loc.CoreVersion, Mode=OneWay}"
+                                   Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   x:Name="CoreVersionText"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Text="{x:Bind Loc.DotNetVersion, Mode=OneWay}"
+                                   Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+                        <TextBlock Grid.Row="2" Grid.Column="1"
+                                   x:Name="DotNetVersionText"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="{x:Bind Loc.OSVersion, Mode=OneWay}"
+                                   Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                   x:Name="OSVersionText"
+                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 快捷入口 -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="{x:Bind Loc.QuickLinks, Mode=OneWay}"
+                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Content="{x:Bind Loc.OpenConfigDir, Mode=OneWay}"
+                            Click="OpenConfigDir_Click"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left" />
+                    <Button Grid.Column="1"
+                            Content="{x:Bind Loc.ViewLogs, Mode=OneWay}"
+                            Click="ViewLogs_Click"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left" />
+                </Grid>
+            </StackPanel>
+
+            <!-- 帮助链接卡片 -->
             <StackPanel Spacing="8">
                 <TextBlock Text="{x:Bind Loc.Help, Mode=OneWay}"
                            Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <HyperlinkButton Content="Github"
-                                     NavigateUri="https://github.com/ClashDotNetFramework/ClashDotNetFramework" />
-                    <HyperlinkButton Content="Discord"
-                                     NavigateUri="https://discord.gg/vsDxzJ9R75" />
-                    <HyperlinkButton Content="Telegram"
-                                     NavigateUri="https://t.me/ClashDotNetFramework" />
-                </StackPanel>
+                <GridView x:Name="HelpLinkGrid"
+                          SelectionMode="None"
+                          ItemContainerStyle="{StaticResource VCardItemContainerStyle}">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridViewItem>
+                        <Border Style="{StaticResource LinkCardBorderStyle}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="GitHub" Style="{StaticResource LinkCardTitleStyle}" />
+                                <TextBlock Text="{x:Bind Loc.LinkGithubDesc, Mode=OneWay}"
+                                           Style="{StaticResource LinkCardDescStyle}" />
+                                <HyperlinkButton Content="github.com/ClashDotNetFramework"
+                                                 NavigateUri="https://github.com/ClashDotNetFramework/ClashDotNetFramework"
+                                                 Padding="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </GridViewItem>
+                    <GridViewItem>
+                        <Border Style="{StaticResource LinkCardBorderStyle}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Discord" Style="{StaticResource LinkCardTitleStyle}" />
+                                <TextBlock Text="{x:Bind Loc.LinkDiscordDesc, Mode=OneWay}"
+                                           Style="{StaticResource LinkCardDescStyle}" />
+                                <HyperlinkButton Content="discord.gg"
+                                                 NavigateUri="https://discord.gg/vsDxzJ9R75"
+                                                 Padding="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </GridViewItem>
+                    <GridViewItem>
+                        <Border Style="{StaticResource LinkCardBorderStyle}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Telegram" Style="{StaticResource LinkCardTitleStyle}" />
+                                <TextBlock Text="{x:Bind Loc.LinkTelegramDesc, Mode=OneWay}"
+                                           Style="{StaticResource LinkCardDescStyle}" />
+                                <HyperlinkButton Content="t.me/ClashDotNetFramework"
+                                                 NavigateUri="https://t.me/ClashDotNetFramework"
+                                                 Padding="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </GridViewItem>
+                </GridView>
             </StackPanel>
 
-            <!-- 致谢 -->
+            <!-- 致谢链接卡片 -->
             <StackPanel Spacing="8">
                 <TextBlock Text="{x:Bind Loc.Credits, Mode=OneWay}"
                            Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <HyperlinkButton Content="Clash"
-                                     NavigateUri="https://github.com/Dreamacro/clash" />
-                    <HyperlinkButton Content="Clash-Dashboard"
-                                     NavigateUri="https://github.com/Dreamacro/clash-dashboard" />
-                    <HyperlinkButton Content="ClashX"
-                                     NavigateUri="https://github.com/yichengchen/clashX" />
-                    <HyperlinkButton Content="Clash For Windows"
-                                     NavigateUri="https://github.com/Fndroid/clash_for_windows_pkg" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
-                    <HyperlinkButton Content="Netch"
-                                     NavigateUri="https://github.com/NetchX/Netch" />
-                    <HyperlinkButton Content="mihomo"
-                                     NavigateUri="https://github.com/MetaCubeX/mihomo" />
-                    <HyperlinkButton Content="Yacd"
-                                     NavigateUri="https://github.com/haishanh/yacd" />
-                </StackPanel>
+                <GridView x:Name="CreditsLinkGrid"
+                          SelectionMode="None"
+                          ItemContainerStyle="{StaticResource VCardItemContainerStyle}">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridViewItem>
+                        <Border Style="{StaticResource LinkCardBorderStyle}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="mihomo" Style="{StaticResource LinkCardTitleStyle}" />
+                                <TextBlock Text="{x:Bind Loc.LinkMihomoDesc, Mode=OneWay}"
+                                           Style="{StaticResource LinkCardDescStyle}" />
+                                <HyperlinkButton Content="MetaCubeX/mihomo"
+                                                 NavigateUri="https://github.com/MetaCubeX/mihomo"
+                                                 Padding="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </GridViewItem>
+                    <GridViewItem>
+                        <Border Style="{StaticResource LinkCardBorderStyle}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Clash" Style="{StaticResource LinkCardTitleStyle}" />
+                                <TextBlock Text="{x:Bind Loc.LinkCreditsDesc, Mode=OneWay}"
+                                           Style="{StaticResource LinkCardDescStyle}" />
+                                <HyperlinkButton Content="Dreamacro/clash"
+                                                 NavigateUri="https://github.com/Dreamacro/clash"
+                                                 Padding="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </GridViewItem>
+                    <GridViewItem>
+                        <Border Style="{StaticResource LinkCardBorderStyle}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Yacd" Style="{StaticResource LinkCardTitleStyle}" />
+                                <TextBlock Text="{x:Bind Loc.LinkCreditsDesc, Mode=OneWay}"
+                                           Style="{StaticResource LinkCardDescStyle}" />
+                                <HyperlinkButton Content="haishanh/yacd"
+                                                 NavigateUri="https://github.com/haishanh/yacd"
+                                                 Padding="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </GridViewItem>
+                </GridView>
             </StackPanel>
 
             <!-- 捐赠 -->
-            <StackPanel Spacing="8">
-                <TextBlock Text="{x:Bind Loc.Donate, Mode=OneWay}"
-                           Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                <HyperlinkButton Content="Crypto Currency"
-                                 NavigateUri="https://u.nu/leudd"
-                                 HorizontalAlignment="Left" />
-            </StackPanel>
+            <Border Style="{StaticResource SubtleCardBorderStyle}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{x:Bind Loc.Donate, Mode=OneWay}"
+                                   Style="{StaticResource CardTitleTextBlockStyle}" />
+                        <TextBlock Text="{x:Bind Loc.LinkDonateDesc, Mode=OneWay}"
+                                   Style="{StaticResource LinkCardDescStyle}" />
+                    </StackPanel>
+                    <HyperlinkButton Grid.Column="1"
+                                     Content="Crypto Currency"
+                                     NavigateUri="https://u.nu/leudd"
+                                     VerticalAlignment="Center" />
+                </Grid>
+            </Border>
 
-            <!-- 广告：仅在成功拉取到图片后显示整块，避免只留下空标题 -->
+            <!-- 广告：仅在成功拉取到图片后显示整块 -->
             <StackPanel x:Name="AdvertisementPanel" Spacing="8" Visibility="Collapsed">
                 <TextBlock Text="{x:Bind Loc.Advertisement, Mode=OneWay}"
                            Style="{StaticResource SectionHeaderTextBlockStyle}" />

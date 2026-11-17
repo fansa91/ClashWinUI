@@ -112,6 +112,15 @@ namespace ClashDotNetFramework
             }
         }
 
+        /// <summary>
+        /// 供各页面跳转到指定导航项（例如代理页空状态跳到配置页），同时同步侧栏高亮。
+        /// </summary>
+        public void NavigateToTag(string tag)
+        {
+            ApplySelection(tag);
+            NavigateTo(tag);
+        }
+
         private void NavigateTo(string tag)
         {
             Page page = tag switch

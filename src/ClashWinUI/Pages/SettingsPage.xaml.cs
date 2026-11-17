@@ -6,6 +6,7 @@ using ClashDotNetFramework.Utils;
 using Microsoft.Win32;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace ClashDotNetFramework.Pages
 
         private ClashConfigsResponse _clashConfigs;
         private bool _loading;
+        private string _currentTab = "General";
 
         public SettingsPage()
         {
@@ -37,6 +39,7 @@ namespace ClashDotNetFramework.Pages
         private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateChecker.NewVersionFound += UpdateChecker_NewVersionFound;
+            ShowTab(_currentTab);
             LoadLocalOptions();
             // 不依赖内核配置能否取到：按钮文案必须反映真实运行状态
             UpdateCoreButton();
@@ -46,6 +49,43 @@ namespace ClashDotNetFramework.Pages
         private void SettingsPage_Unloaded(object sender, RoutedEventArgs e)
         {
             UpdateChecker.NewVersionFound -= UpdateChecker_NewVersionFound;
+        }
+
+        /// <summary>
+        /// 按 mihomo 官方配置段切换设置分组。只做 Visibility 切换，不销毁控件，
+        /// 因此所有回填、事件与 x:Bind 绑定都保持有效；切换后滚动位置回到顶部。
+        /// </summary>
+        private void SettingsTab_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button button || button.Tag is not string tag)
+                return;
+            ShowTab(tag);
+        }
+
+        private void ShowTab(string tag)
+        {
+            if (string.IsNullOrEmpty(tag))
+                return;
+            _currentTab = tag;
+
+            TabGeneral.Visibility = tag == "General" ? Visibility.Visible : Visibility.Collapsed;
+            TabPorts.Visibility = tag == "Ports" ? Visibility.Visible : Visibility.Collapsed;
+            TabNetwork.Visibility = tag == "Network" ? Visibility.Visible : Visibility.Collapsed;
+            TabSystem.Visibility = tag == "System" ? Visibility.Visible : Visibility.Collapsed;
+            TabAdvanced.Visibility = tag == "Advanced" ? Visibility.Visible : Visibility.Collapsed;
+
+            Application.Current.Resources.TryGetValue("AccentFillColorDefaultBrush", out var accentObj);
+            var accentBrush = accentObj as Brush;
+            var transparent = new SolidColorBrush(Windows.UI.Color.FromArgb(0, 0, 0, 0));
+            var buttons = new[] { TabGeneralButton, TabPortsButton, TabNetworkButton, TabSystemButton, TabAdvancedButton };
+            foreach (var button in buttons)
+            {
+                bool selected = string.Equals(button.Tag as string, tag, StringComparison.Ordinal);
+                button.Opacity = selected ? 1.0 : 0.6;
+                button.Background = selected && accentBrush != null ? accentBrush : transparent;
+            }
+
+            SettingsScrollViewer.ChangeView(0, 0, null);
         }
 
         /// <summary>
@@ -137,6 +177,7 @@ namespace ClashDotNetFramework.Pages
         /// </summary>
         public void RefreshLocalizedText()
         {
+            ShowTab(_currentTab);
             UpdateCoreButton();
             bool expanded = DnsAdvancedPanel.Visibility == Visibility.Visible;
             DnsToggleButton.Content = expanded

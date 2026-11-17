@@ -47,8 +47,15 @@ namespace ClashDotNetFramework.Pages
             var target = ProfileItemListView.SelectedItem as ProfileItem;
             bool hasTarget = target != null;
 
-            TargetPanel.Visibility = hasTarget ? Visibility.Visible : Visibility.Collapsed;
-            TargetProfileText.Text = target?.Name ?? string.Empty;
+            // 作用对象常驻可见：未选中时给出占位文案，而不是隐藏整块
+            TargetProfileText.Text = target?.Name ?? Localization.Instance["Unknown"];
+            TargetStatsText.Text = hasTarget
+                ? string.Format(Localization.Instance.ProfileStats,
+                    target!.ProxyCount, target.GroupCount, target.RuleCount)
+                : string.Empty;
+            TargetActiveBadge.Visibility = hasTarget && target!.IsSelected
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
             ActivateButton.IsEnabled = hasTarget && !target!.IsSelected;
             UpdateProfileButton.IsEnabled = hasTarget;

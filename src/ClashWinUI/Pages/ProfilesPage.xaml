@@ -10,6 +10,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -17,11 +18,9 @@
         <TextBlock Text="{x:Bind Loc.Profiles, Mode=OneWay}"
                    Style="{StaticResource PageTitleTextBlockStyle}" />
 
-        <!-- 订阅卡片：说明当前操作对象 + 操作按钮组 -->
-        <Border Grid.Row="1"
-                Style="{StaticResource CardBorderStyle}"
-                Margin="0,0,0,0">
-            <Grid ColumnSpacing="16" RowSpacing="8">
+        <!-- 当前配置卡：常驻显示作用对象，三个按钮都作用于它 -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}">
+            <Grid ColumnSpacing="16" RowSpacing="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -33,29 +32,35 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
-                           Text="{x:Bind Loc.Subscription, Mode=OneWay}"
+                           Text="{x:Bind Loc.CurrentProfile, Mode=OneWay}"
                            Style="{StaticResource SectionHeaderTextBlockStyle}" />
 
-                <!-- 这三个按钮作用于下方列表中当前高亮的行 -->
-                <StackPanel Grid.Row="1" Grid.ColumnSpan="2"
-                            Orientation="Horizontal"
-                            Spacing="12"
-                            Visibility="Collapsed"
-                            x:Name="TargetPanel">
-                    <TextBlock Text="{x:Bind Loc.TargetProfile, Mode=OneWay}"
-                               VerticalAlignment="Center"
-                               Style="{StaticResource CaptionTextBlockStyle}"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <TextBlock x:Name="TargetProfileText"
-                               VerticalAlignment="Center"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis"
-                               MaxWidth="260" />
+                <!-- 作用对象常驻：未选中时显示占位文案，不再整块隐藏 -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock x:Name="TargetProfileText"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxWidth="360" />
+                        <Border x:Name="TargetActiveBadge"
+                                Style="{StaticResource TagBorderStyle}"
+                                Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                Visibility="Collapsed">
+                            <TextBlock Text="{x:Bind Loc.Activated, Mode=OneWay}"
+                                       Style="{StaticResource TagTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock x:Name="TargetStatsText"
+                               Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
+                <!-- 三个按钮作用于当前高亮行，未选中时禁用 -->
+                <StackPanel Grid.Row="1" Grid.Column="1"
                             Orientation="Horizontal"
-                            Spacing="12">
+                            Spacing="8"
+                            VerticalAlignment="Center">
                     <Button x:Name="ActivateButton"
                             Content="{x:Bind Loc.Activate, Mode=OneWay}"
                             Click="ActivateSubscription_Click"
@@ -69,37 +74,52 @@
                             Click="CopySubscription_Click"
                             MinWidth="90" />
                 </StackPanel>
+
+                <!-- 兼容旧代码引用：保留但隐藏，避免 UpdateTargetState 空引用 -->
+                <StackPanel x:Name="TargetPanel" Grid.Row="2" Grid.ColumnSpan="2" Visibility="Collapsed" />
             </Grid>
         </Border>
 
-        <!-- 导入与更新工具栏 -->
-        <Grid Grid.Row="2" Margin="0,0,0,0" ColumnSpacing="8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBox x:Name="UrlTextBox"
-                     PlaceholderText="{x:Bind Loc.DownloadFromURL, Mode=OneWay}"
-                     VerticalAlignment="Center" />
-            <Button x:Name="DownloadButton"
-                    Grid.Column="1"
-                    Content="{x:Bind Loc.Download, Mode=OneWay}"
-                    Click="DownloadButton_Click" />
-            <Button x:Name="UpdateAllButton"
-                    Grid.Column="2"
-                    Content="{x:Bind Loc.UpdateAll, Mode=OneWay}"
-                    Click="UpdateAllButton_Click" />
-            <Button x:Name="ImportButton"
-                    Grid.Column="3"
-                    Content="{x:Bind Loc.Import, Mode=OneWay}"
-                    Click="ImportButton_Click" />
-        </Grid>
+        <!-- 导入与更新工具栏：URL 下载为主按钮 -->
+        <Border Grid.Row="2" Style="{StaticResource ToolbarBorderStyle}">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="UrlTextBox"
+                         PlaceholderText="{x:Bind Loc.DownloadFromURL, Mode=OneWay}"
+                         VerticalAlignment="Center" />
+                <Button x:Name="DownloadButton"
+                        Grid.Column="1"
+                        Content="{x:Bind Loc.Download, Mode=OneWay}"
+                        Click="DownloadButton_Click"
+                        Style="{StaticResource AccentButtonStyle}" />
+                <Button x:Name="UpdateAllButton"
+                        Grid.Column="2"
+                        Content="{x:Bind Loc.UpdateAll, Mode=OneWay}"
+                        Click="UpdateAllButton_Click" />
+                <Button x:Name="ImportButton"
+                        Grid.Column="3"
+                        Content="{x:Bind Loc.Import, Mode=OneWay}"
+                        Click="ImportButton_Click" />
+            </Grid>
+        </Border>
+
+        <!-- 拖放提示区 -->
+        <Border Grid.Row="3"
+                Style="{StaticResource SubtleCardBorderStyle}"
+                Padding="16,10">
+            <TextBlock Text="{x:Bind Loc.DropProfileHint, Mode=OneWay}"
+                       Style="{StaticResource SecondaryCaptionTextBlockStyle}"
+                       TextAlignment="Center" />
+        </Border>
 
         <!-- 配置文件列表（虚拟化） -->
         <ListView x:Name="ProfileItemListView"
-                  Grid.Row="3"
+                  Grid.Row="4"
                   SelectionMode="Single"
                   IsItemClickEnabled="True"
                   ItemClick="ProfileItemListView_ItemClick"
@@ -136,12 +156,22 @@
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock Text="{Binding Name}"
                                            FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding Type}"
-                                           Opacity="0.6" />
+                                <Border Style="{StaticResource TagBorderStyle}">
+                                    <TextBlock Text="{Binding Type, Converter={StaticResource ProfileTypeToString}}"
+                                               Style="{StaticResource TagTextBlockStyle}" />
+                                </Border>
+                                <!-- 当前生效徽章 -->
+                                <Border Style="{StaticResource TagBorderStyle}"
+                                        Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                        Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}">
+                                    <TextBlock Text="{Binding CurrentProfile, Source={StaticResource Loc}}"
+                                               Style="{StaticResource TagTextBlockStyle}"
+                                               Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+                                </Border>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="12" Opacity="0.7" Margin="0,4,0,0">
                                 <TextBlock Text="{Binding ProxyCount, Converter={StaticResource NodesCount}}" />
-                                <TextBlock Text="{Binding LastUpdate}" />
+                                <TextBlock Text="{Binding LastUpdate, Converter={StaticResource RelativeTime}}" />
                             </StackPanel>
                         </StackPanel>
                         <SymbolIcon Grid.Column="1"

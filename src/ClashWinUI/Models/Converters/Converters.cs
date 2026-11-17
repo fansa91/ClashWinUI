@@ -41,6 +41,10 @@ namespace ClashDotNetFramework.Models.Converters
         public static Color Neutral(bool dark) => dark
             ? Color.FromArgb(0xFF, 0xC8, 0xC8, 0xC8)
             : Color.FromArgb(0xFF, 0x6B, 0x6B, 0x6B);
+
+        public static Color NeutralBackground(bool dark) => dark
+            ? Color.FromArgb(0xFF, 0x2C, 0x2C, 0x2A)
+            : Color.FromArgb(0xFF, 0xF1, 0xEF, 0xE8);
     }
 
     public class BoolToVisibilityConverter : IValueConverter
@@ -196,7 +200,7 @@ namespace ClashDotNetFramework.Models.Converters
                 "error" => new SolidColorBrush(SemanticPalette.CriticalBackground(dark)),
                 "warning" => new SolidColorBrush(SemanticPalette.CautionBackground(dark)),
                 "info" => new SolidColorBrush(SemanticPalette.SuccessBackground(dark)),
-                _ => new SolidColorBrush(SemanticPalette.Neutral(dark))
+                _ => new SolidColorBrush(SemanticPalette.NeutralBackground(dark))
             };
         }
 
@@ -237,6 +241,62 @@ namespace ClashDotNetFramework.Models.Converters
         {
             long count = value is IConvertible convertible ? convertible.ToInt64(null) : 0;
             return string.Format(Localization.Instance.NodesCount, count);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// 规则策略 / 连接协议的语义色：
+    /// parameter = "proxy" 时 REJECT 用严重色、DIRECT 用中性色、其余用强调蓝；
+    /// parameter = "network" 时 TCP 用蓝、UDP 用警告色。
+    /// 前景色统一走这里，避免 XAML 里出现硬编码色值。
+    /// </summary>
+    public class SemanticTagConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            string text = value?.ToString()?.ToLowerInvariant() ?? "";
+            bool dark = Global.IsDarkTheme;
+            Color color;
+
+            if (string.Equals(parameter as string, "network", StringComparison.OrdinalIgnoreCase))
+                color = text == "udp" ? SemanticPalette.Caution(dark)
+                    : Color.FromArgb(0xFF, 0x37, 0x8A, 0xDD);
+            else
+                color = text == "reject" ? SemanticPalette.Critical(dark)
+                    : text == "direct" ? SemanticPalette.Neutral(dark)
+                    : Color.FromArgb(0xFF, 0x37, 0x8A, 0xDD);
+
+            return new SolidColorBrush(color);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// 更新时间 → 相对时间（刚刚 / N 分钟前 / N 小时前 / N 天前）。
+    /// 用于订阅列表，避免直接显示原始时间戳难以判断新旧。
+    /// </summary>
+    public class RelativeTimeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not DateTime time)
+                return string.Empty;
+
+            TimeSpan delta = DateTime.Now - time;
+            if (delta.TotalSeconds < 0)
+                return Localization.Instance.JustNow;
+            if (delta.TotalMinutes < 1)
+                return Localization.Instance.JustNow;
+            if (delta.TotalHours < 1)
+                return string.Format(Localization.Instance.MinutesAgo, (int)delta.TotalMinutes);
+            if (delta.TotalDays < 1)
+                return string.Format(Localization.Instance.HoursAgo, (int)delta.TotalHours);
+            return string.Format(Localization.Instance.DaysAgo, (int)delta.TotalDays);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

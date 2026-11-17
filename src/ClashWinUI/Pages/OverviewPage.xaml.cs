@@ -1,12 +1,14 @@
 using Clash.SDK.Models.Enums;
 using Clash.SDK.Models.Events;
 using ClashDotNetFramework.Controllers;
+using ClashDotNetFramework.Models.Converters;
 using ClashDotNetFramework.Utils;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using SkiaSharp;
 using System;
 using System.Collections.ObjectModel;
@@ -20,6 +22,13 @@ namespace ClashDotNetFramework.Pages
         public Localization Loc => Localization.Instance;
 
         public ISeries[] Series { get; set; }
+
+        /// <summary>Y 轴固定从 0 开始，避免流量图出现无意义的负数刻度；X 轴隐藏索引标签。</summary>
+        public Axis[] YAxes { get; } = { new Axis { MinLimit = 0 } };
+
+        public Axis[] XAxes { get; } = { new Axis { Labels = Array.Empty<string>(), ShowSeparatorLines = false } };
+
+        private bool _hasTraffic;
 
         private readonly ObservableCollection<double> _upload = new() { 0.00 };
         private readonly ObservableCollection<double> _download = new() { 0.00 };
@@ -53,6 +62,10 @@ namespace ClashDotNetFramework.Pages
                     Stroke = new SolidColorPaint(SKColors.MediumSeaGreen) { StrokeThickness = 2 }
                 }
             };
+
+            // 运行时赋值而非 x:Bind：LiveCharts 的 Axis[] 在 x:Bind 生成代码里类型解析会失败
+            TrafficChart.YAxes = YAxes;
+            TrafficChart.XAxes = XAxes;
 
             _uptimeTimer.Tick += (s, e) =>
             {
@@ -110,6 +123,7 @@ namespace ClashDotNetFramework.Pages
                 Global.RunOnUI(() =>
                 {
                     ModeText.Text = mode;
+                    ModeBadgeText.Text = mode;
                     MixedPortText.Text = config.MixedPort.ToString();
                     AllowLanText.Text = allowLan;
                     Ipv6Text.Text = ipv6;
@@ -126,8 +140,15 @@ namespace ClashDotNetFramework.Pages
             var traffic = e.Response;
             Global.RunOnUI(() =>
             {
-                UploadSpeedText.Text = $"{UnitConverter.FormatBytes(traffic.Up)}/s";
-                DownloadSpeedText.Text = $"{UnitConverter.FormatBytes(traffic.Down)}/s";
+                SplitSpeed(UnitConverter.FormatBytes(traffic.Up), UploadSpeedText, UploadUnitText);
+                SplitSpeed(UnitConverter.FormatBytes(traffic.Down), DownloadSpeedText, DownloadUnitText);
+
+                // 有任意方向流量后隐藏"等待流量"提示
+                if (!_hasTraffic && (traffic.Up > 0 || traffic.Down > 0))
+                {
+                    _hasTraffic = true;
+                    TrafficEmptyHint.Visibility = Visibility.Collapsed;
+                }
 
                 _upload.Add(Convert.ToDouble(traffic.Up));
                 _download.Add(Convert.ToDouble(traffic.Down));
@@ -194,6 +215,31 @@ namespace ClashDotNetFramework.Pages
         {
             bool running = Global.clashController?.IsRunning == true;
             CoreButton.Content = Localization.Instance[running ? "StopCore" : "StartCore"];
+            CoreStatusText.Text = Localization.Instance[running ? "Connected" : "Disconnected"];
+            CoreStatusLight.Fill = new SolidColorBrush(running
+                ? SemanticPalette.Success(Global.IsDarkTheme)
+                : SemanticPalette.Critical(Global.IsDarkTheme));
+        }
+
+        /// <summary>把 "1.23 KB/s" 拆成数值与单位，分别写入两个 TextBlock 以实现字号分层。</summary>
+        private static void SplitSpeed(string formatted, TextBlock value, TextBlock unit)
+        {
+            const string suffix = "/s";
+            string text = formatted.EndsWith(suffix, StringComparison.Ordinal)
+                ? formatted.Substring(0, formatted.Length - suffix.Length)
+                : formatted;
+
+            int split = text.LastIndexOf(' ');
+            if (split > 0)
+            {
+                value.Text = text.Substring(0, split);
+                unit.Text = text.Substring(split + 1) + suffix;
+            }
+            else
+            {
+                value.Text = text;
+                unit.Text = suffix;
+            }
         }
 
         /// <summary>

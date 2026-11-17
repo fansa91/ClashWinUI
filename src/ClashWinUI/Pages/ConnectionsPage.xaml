@@ -1,24 +1,34 @@
-<Page
+﻿<Page
     x:Class="ClashDotNetFramework.Pages.ConnectionsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Loaded="ConnectionsPage_Loaded"
     Unloaded="ConnectionsPage_Unloaded">
 
-    <Grid Padding="{StaticResource PageMargin}" RowSpacing="16">
+    <Grid Padding="{StaticResource PageMargin}" RowSpacing="12">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- 页面标题 -->
-        <TextBlock Text="{x:Bind Loc.Connections, Mode=OneWay}"
-                   Style="{StaticResource PageTitleTextBlockStyle}" />
+        <!-- 页面标题 + 活跃连接数 -->
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{x:Bind Loc.Connections, Mode=OneWay}"
+                       Style="{StaticResource PageTitleTextBlockStyle}" />
+            <Border Grid.Column="1" Style="{StaticResource CountBadgeStyle}">
+                <TextBlock x:Name="ConnectionCountText"
+                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+            </Border>
+        </Grid>
 
         <!-- 顶部固定工具栏 -->
-        <Border Grid.Row="1"
-                Style="{StaticResource ToolbarBorderStyle}">
+        <Border Grid.Row="1" Style="{StaticResource ToolbarBorderStyle}">
             <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -27,25 +37,24 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- 搜索 -->
                 <AutoSuggestBox x:Name="ConnectionSearchBox"
                                 Width="240"
                                 VerticalAlignment="Center"
                                 PlaceholderText="{x:Bind Loc.SearchPlaceholder, Mode=OneWay}"
-                                QueryIcon="Find" />
+                                QueryIcon="Find"
+                                TextChanged="ConnectionSearchBox_TextChanged" />
 
-                <!-- 协议筛选 -->
                 <ComboBox x:Name="ConnectionProtocolFilter"
                           Grid.Column="1"
                           Width="120"
                           VerticalAlignment="Center"
-                          SelectedIndex="0">
-                    <ComboBoxItem Content="{x:Bind Loc.All, Mode=OneWay}" />
-                    <ComboBoxItem Content="{x:Bind Loc.TCP, Mode=OneWay}" />
-                    <ComboBoxItem Content="{x:Bind Loc.UDP, Mode=OneWay}" />
+                          SelectedIndex="0"
+                          SelectionChanged="ConnectionProtocolFilter_SelectionChanged">
+                    <ComboBoxItem Content="{x:Bind Loc.All, Mode=OneWay}" Tag="All" />
+                    <ComboBoxItem Content="{x:Bind Loc.TCP, Mode=OneWay}" Tag="TCP" />
+                    <ComboBoxItem Content="{x:Bind Loc.UDP, Mode=OneWay}" Tag="UDP" />
                 </ComboBox>
 
-                <!-- 操作按钮 -->
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             Spacing="8"
@@ -54,9 +63,13 @@
                             Content="{x:Bind Loc.CloseAll, Mode=OneWay}"
                             Click="CloseAllButton_Click"
                             MinWidth="80" />
+                    <Button x:Name="ClearFilterButton"
+                            Content="{x:Bind Loc.ClearFilter, Mode=OneWay}"
+                            Click="ClearFilterButton_Click"
+                            Visibility="Collapsed" />
                 </StackPanel>
 
-                <!-- 总流量指示 -->
+                <!-- 累计流量 -->
                 <TextBlock x:Name="TotalTraffic"
                            Grid.Column="3"
                            VerticalAlignment="Center"
@@ -64,9 +77,34 @@
             </Grid>
         </Border>
 
+        <!-- 列头：右侧留滚动条宽度，与数据行对齐 -->
+        <Grid Grid.Row="2"
+              Margin="0,0,0,8"
+              Padding="12,8,28,8"
+              ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="44" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{x:Bind Loc.Target, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
+            <TextBlock Grid.Column="1"
+                       Text="{x:Bind Loc.Network, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
+            <TextBlock Grid.Column="2"
+                       Text="{x:Bind Loc.Speed, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
+            <TextBlock Grid.Column="3"
+                       Text="{x:Bind Loc.Duration, Mode=OneWay}"
+                       Style="{StaticResource ColumnHeaderTextBlockStyle}" />
+        </Grid>
+
         <!-- 连接列表（虚拟化，等宽字体） -->
         <ListView x:Name="ConnectionItemListView"
-                  Grid.Row="2"
+                  Grid.Row="3"
                   SelectionMode="None"
                   IsItemClickEnabled="True"
                   ItemClick="ConnectionItemListView_ItemClick"
@@ -80,53 +118,66 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="10,8" ColumnSpacing="12">
+                    <Grid Padding="12,8" ColumnSpacing="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="80" />
                             <ColumnDefinition Width="180" />
-                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="44" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding TargetHost}"
+                        <TextBlock Text="{Binding TargetHost, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis"
+                                   ToolTipService.ToolTip="{Binding TargetHost, Mode=OneWay}"
                                    VerticalAlignment="Center"
                                    Style="{StaticResource MonospaceTextBlockStyle}" />
-                        <TextBlock Grid.Column="1"
-                                   Text="{Binding Network}"
-                                   Opacity="0.7"
-                                   VerticalAlignment="Center"
-                                   Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <Border Grid.Column="1"
+                                Style="{StaticResource TagBorderStyle}"
+                                HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding Network, Mode=OneWay}"
+                                       Style="{StaticResource TagTextBlockStyle}"
+                                       Foreground="{Binding Network, Mode=OneWay, Converter={StaticResource SemanticTag}, ConverterParameter=network}" />
+                        </Border>
                         <TextBlock Grid.Column="2"
-                                   Text="{Binding Speed}"
+                                   Text="{Binding Speed, Mode=OneWay}"
                                    Opacity="0.7"
                                    VerticalAlignment="Center"
                                    Style="{StaticResource MonospaceTextBlockStyle}" />
                         <TextBlock Grid.Column="3"
-                                   Text="{Binding Time}"
+                                   Text="{Binding Time, Mode=OneWay}"
                                    Opacity="0.7"
                                    VerticalAlignment="Center"
                                    Style="{StaticResource MonospaceTextBlockStyle}" />
+                        <Button Grid.Column="4"
+                                Width="32"
+                                Height="30"
+                                Padding="0"
+                                HorizontalAlignment="Left"
+                                ToolTipService.ToolTip="{Binding UUID, Mode=OneWay}"
+                                Tag="{Binding UUID, Mode=OneWay}"
+                                Click="CloseConnectionButton_Click">
+                            <FontIcon Glyph="&#xE711;"
+                                      FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                      FontSize="12" />
+                        </Button>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- 空状态 -->
+        <!-- 空状态：无连接 / 筛选无结果 -->
         <StackPanel x:Name="EmptyStatePanel"
-                    Grid.Row="2"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="12"
+                    Grid.Row="3"
+                    Style="{StaticResource EmptyStatePanelStyle}"
                     Visibility="Collapsed">
-            <FontIcon Glyph="&#xE8B7;"
-                      FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                      FontSize="36"
-                      Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
-            <TextBlock Text="{x:Bind Loc.NoConnections, Mode=OneWay}"
-                       TextWrapping="Wrap"
-                       TextAlignment="Center"
-                       MaxWidth="420"
-                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            <FontIcon Style="{StaticResource EmptyStateIconStyle}" />
+            <TextBlock x:Name="EmptyText"
+                       Text="{x:Bind Loc.NoConnections, Mode=OneWay}"
+                       Style="{StaticResource EmptyStateTextStyle}" />
+            <Button x:Name="ClearEmptyFilterButton"
+                    Content="{x:Bind Loc.ClearFilter, Mode=OneWay}"
+                    Click="ClearFilterButton_Click"
+                    Visibility="Collapsed" />
         </StackPanel>
     </Grid>
 </Page>

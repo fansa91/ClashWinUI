@@ -43,6 +43,7 @@ namespace ClashDotNetFramework.Utils
         public void RefreshSemanticColors()
         {
             proxiesPage?.RefreshSemanticColors();
+            rulesPage?.RefreshSemanticColors();
             connectionsPage?.RefreshSemanticColors();
             logsPage?.RefreshSemanticColors();
         }
