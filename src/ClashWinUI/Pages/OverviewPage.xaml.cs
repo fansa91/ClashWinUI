@@ -1,17 +1,19 @@
 using Clash.SDK.Models.Enums;
 using Clash.SDK.Models.Events;
 using ClashDotNetFramework.Controllers;
-using ClashDotNetFramework.Models.Converters;
 using ClashDotNetFramework.Utils;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ClashDotNetFramework.Pages
@@ -21,12 +23,14 @@ namespace ClashDotNetFramework.Pages
         /// <summary>本地化字符串表，供 x:Bind 编译期绑定使用</summary>
         public Localization Loc => Localization.Instance;
 
-        public ISeries[] Series { get; set; }
+        public ISeries[] Series { get; private set; }
 
         /// <summary>Y 轴固定从 0 开始，避免流量图出现无意义的负数刻度；X 轴隐藏索引标签。</summary>
         public Axis[] YAxes { get; } = { new Axis { MinLimit = 0 } };
 
         public Axis[] XAxes { get; } = { new Axis { Labels = Array.Empty<string>(), ShowSeparatorLines = false } };
+
+        private readonly Style _accentButtonStyle;
 
         private bool _hasTraffic;
 
@@ -36,16 +40,28 @@ namespace ClashDotNetFramework.Pages
         private DateTime _startTime = DateTime.Now;
         private bool _loading;
 
+        /// <summary>当前代理模式；内核未连接时保持默认值，按钮不可点。</summary>
+        private ModeType _mode = ModeType.Rule;
+
+        /// <summary>已订阅事件的客户端实例。内核重启会换新实例，需要重新挂事件。</summary>
+        private Clash.SDK.ClashClient _subscribedClient;
+
         public OverviewPage()
         {
             InitializeComponent();
             DataContext = Localization.Instance;
 
+            // 记住强调按钮样式：内核运行时切回普通按钮，重新启动时再套回来
+            _accentButtonStyle = CoreButton.Style;
+
             BuildSeries();
 
-            // 运行时赋值而非 x:Bind：LiveCharts 的 Axis[] 在 x:Bind 生成代码里类型解析会失败
+            // 运行时赋值而非 x:Bind：LiveCharts 的 Series / Axis[] 在 x:Bind 生成代码里类型解析会失败
+            TrafficChart.Series = Series;
             TrafficChart.YAxes = YAxes;
             TrafficChart.XAxes = XAxes;
+
+            RefreshModeSelection();
 
             _uptimeTimer.Tick += (s, e) =>
             {
@@ -55,11 +71,38 @@ namespace ClashDotNetFramework.Pages
         }
 
         /// <summary>
+        /// 按内容区实测宽度切换卡片布局。
+        /// 不用 AdaptiveTrigger：导航从展开窗格折成图标栏时，内容区宽度会突然变宽，
+        /// 用窗口宽度判断会出现“窗口变窄、卡片反而变成多列”的反直觉跳变。
+        /// </summary>
+        private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double width = e.NewSize.Width;
+
+            if (width <= 0)
+                return;
+
+            string state = width >= 880 ? "WideDashboard"
+                : width >= 745 ? "MediumDashboard"
+                : "NarrowDashboard";
+
+            VisualStateManager.GoToState(this, state, false);
+        }
+
+        /// <summary>
         /// 按当前调色板重建曲线。图表画笔是 SkiaSharp 对象，不参与 ThemeResource，
         /// 主题切换后必须重建一次才能换色。
         /// </summary>
         private void BuildSeries()
         {
+            // 坐标轴文字与网格线也取主题色：LiveCharts 默认是固定灰，深色主题下会偏暗
+            var labelPaint = new SolidColorPaint(ToSkColor(ThemeTokens.TextTertiary));
+            var gridPaint = new SolidColorPaint(ToSkColor(ThemeTokens.ChartGrid)) { StrokeThickness = 1 };
+
+            YAxes[0].LabelsPaint = labelPaint;
+            YAxes[0].SeparatorsPaint = gridPaint;
+            XAxes[0].LabelsPaint = labelPaint;
+
             Series = new ISeries[]
             {
                 new LineSeries<double>
@@ -83,11 +126,14 @@ namespace ClashDotNetFramework.Pages
             };
         }
 
-        /// <summary>主题切换后重算图表配色</summary>
+        /// <summary>主题切换后重算图表配色与由代码着色的模式选项</summary>
         public void RefreshSemanticColors()
         {
             BuildSeries();
             TrafficChart.Series = Series;
+            TrafficChart.YAxes = YAxes;
+            TrafficChart.XAxes = XAxes;
+            RefreshModeSelection();
         }
 
         private static SKColor ToSkColor(Windows.UI.Color color)
@@ -104,53 +150,67 @@ namespace ClashDotNetFramework.Pages
             _loading = false;
             UpdateCoreButton();
 
-            if (Global.clashClient != null)
-            {
-                Global.clashClient.TrafficReceivedEvt += OnTrafficUpdated;
-                Global.clashClient.ConnectionUpdatedEvt += OnConnectionUpdated;
-            }
-            Task.Run(() => LoadRuntimeInfo());
+            SubscribeTraffic();
+            _ = Task.Run(LoadRuntimeInfoAsync);
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             _uptimeTimer.Stop();
-            if (Global.clashClient != null)
-            {
-                Global.clashClient.TrafficReceivedEvt -= OnTrafficUpdated;
-                Global.clashClient.ConnectionUpdatedEvt -= OnConnectionUpdated;
-            }
+            UnsubscribeTraffic();
         }
 
-        private void LoadRuntimeInfo()
+        /// <summary>
+        /// 订阅流量与连接事件。内核启停会重建 ClashClient，页面停留期间也要能重新挂上，
+        /// 否则从这张卡启停内核后，数值会停在上一个实例上不再刷新。
+        /// </summary>
+        private void SubscribeTraffic()
+        {
+            var client = Global.clashClient;
+            if (client == null || ReferenceEquals(client, _subscribedClient))
+                return;
+
+            UnsubscribeTraffic();
+            client.TrafficReceivedEvt += OnTrafficUpdated;
+            client.ConnectionUpdatedEvt += OnConnectionUpdated;
+            _subscribedClient = client;
+        }
+
+        private void UnsubscribeTraffic()
+        {
+            if (_subscribedClient == null)
+                return;
+
+            _subscribedClient.TrafficReceivedEvt -= OnTrafficUpdated;
+            _subscribedClient.ConnectionUpdatedEvt -= OnConnectionUpdated;
+            _subscribedClient = null;
+        }
+
+        private async Task LoadRuntimeInfoAsync()
         {
             try
             {
-                var config = Global.clashClient.GetClashConfigs().GetAwaiter().GetResult();
-                string mode = config.Mode switch
-                {
-                    ModeType.Direct => Localization.Instance["Direct"],
-                    ModeType.Global => Localization.Instance["Global"],
-                    _ => Localization.Instance["Rule"]
-                };
+                var config = await Global.clashClient.GetClashConfigs();
                 string yes = Localization.Instance["Yes"];
                 string no = Localization.Instance["No"];
                 string allowLan = config.AllowLan ? yes : no;
                 string ipv6 = config.IPV6 ? yes : no;
-                string version = Global.clashClient.GetClashVersion().GetAwaiter().GetResult().Version;
+                var mode = config.Mode;
+                string version = (await Global.clashClient.GetClashVersion()).Version;
 
                 Global.RunOnUI(() =>
                 {
-                    ModeText.Text = mode;
-                    ModeBadgeText.Text = mode;
+                    _mode = mode;
                     MixedPortText.Text = config.MixedPort.ToString();
                     AllowLanText.Text = allowLan;
                     Ipv6Text.Text = ipv6;
                     CoreVersionText.Text = version;
+                    RefreshModeSelection();
                 });
             }
             catch
             {
+                // 内核未启动 / 断线重连期间取不到配置，保持上一次的显示即可
             }
         }
 
@@ -216,6 +276,89 @@ namespace ClashDotNetFramework.Pages
             });
         }
 
+        private void ModeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button button)
+                return;
+
+            var mode = (button.Tag as string) switch
+            {
+                "Global" => ModeType.Global,
+                "Direct" => ModeType.Direct,
+                _ => ModeType.Rule
+            };
+
+            if (mode == _mode)
+                return;
+
+            _mode = mode;
+            RefreshModeSelection();
+
+            if (Global.clashClient == null || Global.clashController?.IsRunning != true)
+            {
+                // 内核没起时切换无法生效，直接回到真实状态
+                _ = Task.Run(LoadRuntimeInfoAsync);
+                return;
+            }
+
+            _ = Task.Run(() => ChangeModeAsync(mode));
+        }
+
+        private async Task ChangeModeAsync(ModeType mode)
+        {
+            try
+            {
+                await Global.clashClient.ChangeClashConfigs(
+                    new Dictionary<string, dynamic> { { "mode", mode.ToString() } });
+                Global.Settings.Mode = mode.ToString().ToLowerInvariant();
+                Configuration.Save();
+
+                var selected = Global.Settings.Profile.FirstOrDefault(p => p.IsSelected);
+                if (selected != null)
+                    ConfigInjector.Apply(selected.FileName);
+            }
+            catch
+            {
+                // 写入失败时向内核重新取一次真实模式，避免按钮停在一个没生效的值上
+                await LoadRuntimeInfoAsync();
+            }
+        }
+
+        /// <summary>把当前模式同步到三个选项的选中标记与说明文字</summary>
+        private void RefreshModeSelection()
+        {
+            ApplyModeState(RuleModeCheck, RuleModeText, _mode == ModeType.Rule);
+            ApplyModeState(GlobalModeCheck, GlobalModeText, _mode == ModeType.Global);
+            ApplyModeState(DirectModeCheck, DirectModeText, _mode == ModeType.Direct);
+
+            if (ModeHintText != null)
+            {
+                ModeHintText.Text = Localization.Instance[_mode switch
+                {
+                    ModeType.Direct => "ModeHintDirect",
+                    ModeType.Global => "ModeHintGlobal",
+                    _ => "ModeHintRule"
+                }];
+            }
+        }
+
+        private static void ApplyModeState(FontIcon check, TextBlock text, bool selected)
+        {
+            if (check == null || text == null)
+                return;
+
+            check.Opacity = selected ? 1 : 0;
+            text.Foreground = ThemeBrush(selected ? "BrandPrimaryBrush" : "TextSecondaryBrush");
+            text.FontWeight = selected ? FontWeights.SemiBold : FontWeights.Normal;
+        }
+
+        /// <summary>按主题资源取画笔；键不存在时返回 null，由控件自身样式兜底。</summary>
+        private static Brush ThemeBrush(string key)
+        {
+            var resources = (IDictionary<object, object>)Application.Current.Resources;
+            return resources.TryGetValue(key, out var value) && value is Brush brush ? brush : null;
+        }
+
         private async void CoreButton_Click(object sender, RoutedEventArgs e)
         {
             CoreButton.IsEnabled = false;
@@ -228,16 +371,26 @@ namespace ClashDotNetFramework.Pages
                 UpdateCoreButton();
                 CoreButton.IsEnabled = true;
             });
+
+            SubscribeTraffic();
+            await LoadRuntimeInfoAsync();
         }
 
         private void UpdateCoreButton()
         {
             bool running = Global.clashController?.IsRunning == true;
+
             CoreButton.Content = Localization.Instance[running ? "StopCore" : "StartCore"];
-            CoreStatusText.Text = Localization.Instance[running ? "Connected" : "Disconnected"];
-            CoreStatusLight.Fill = new SolidColorBrush(running
-                ? SemanticPalette.Success(Global.IsDarkTheme)
-                : SemanticPalette.Critical(Global.IsDarkTheme));
+            CoreButton.Style = running ? null : _accentButtonStyle;
+
+            // 状态药丸：两套配色都写在 XAML 里走资源，这里只切换显隐
+            ConnectedPill.Visibility = running ? Visibility.Visible : Visibility.Collapsed;
+            DisconnectedPill.Visibility = running ? Visibility.Collapsed : Visibility.Visible;
+
+            // 内核未运行时切模式没有意义
+            RuleModeButton.IsEnabled = running;
+            GlobalModeButton.IsEnabled = running;
+            DirectModeButton.IsEnabled = running;
         }
 
         /// <summary>把 "1.23 KB/s" 拆成数值与单位，分别写入两个 TextBlock 以实现字号分层。</summary>
@@ -263,12 +416,13 @@ namespace ClashDotNetFramework.Pages
 
         /// <summary>
         /// 语言切换后刷新由代码写入的文案。
-        /// ModeText / AllowLanText / Ipv6Text 依赖运行时状态，需要重新向内核取一次。
+        /// 端口 / 局域网 / IPv6 依赖运行时状态，需要重新向内核取一次。
         /// </summary>
         public void RefreshLocalizedText()
         {
             UpdateCoreButton();
-            Task.Run(() => LoadRuntimeInfo());
+            RefreshModeSelection();
+            _ = Task.Run(LoadRuntimeInfoAsync);
         }
 
         private static string FormatUptime(TimeSpan ts)
