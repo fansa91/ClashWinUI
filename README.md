@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="src/ClashWinUI/Assets/AppLogo.png" width="160" alt="ClashWinUI logo">
+</p>
+
 # ClashWinUI
 
 基于 **WinUI 3 + .NET 10** 重写的 Windows 代理客户端，由 [ClashDotNetFramework](https://github.com/sqzxcv/ClashDotNetFramework-src)（WPF）迁移而来：复用其核心逻辑，UI 全部重写，内核替换为 **mihomo（Clash.Meta）**，进程代理（NetFilter）替换为 **mihomo 内置 TUN**。
