@@ -77,7 +77,8 @@ namespace ClashDotNetFramework
             Configuration.Load();
 
             Global.clashController = new ClashController();
-            Global.clashController.Start();
+            // 默认不自动启动内核（用户反馈）：打开应用停在“启动内核”状态，
+            // 由用户手动启动；计时也随内核状态走（见 OverviewPage/MainWindow）。
 
             RegisterURIScheme();
 

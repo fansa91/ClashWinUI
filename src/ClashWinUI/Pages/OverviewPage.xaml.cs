@@ -40,6 +40,9 @@ namespace ClashDotNetFramework.Pages
         private DateTime _startTime = DateTime.Now;
         private bool _loading;
 
+        /// <summary>上一次滴答时的内核运行状态，用于识别“启动”瞬间重置计时基准</summary>
+        private bool _coreRunning;
+
         /// <summary>当前代理模式；内核未连接时保持默认值，按钮不可点。</summary>
         private ModeType _mode = ModeType.Rule;
 
@@ -67,11 +70,7 @@ namespace ClashDotNetFramework.Pages
 
             RefreshModeSelection();
 
-            _uptimeTimer.Tick += (s, e) =>
-            {
-                UptimeText.Text = FormatUptime(DateTime.Now - _startTime);
-                UpdateCoreButton();
-            };
+            _uptimeTimer.Tick += (s, e) => UpdateCoreButton();
         }
 
         /// <summary>
@@ -428,8 +427,15 @@ namespace ClashDotNetFramework.Pages
         {
             bool running = Global.clashController?.IsRunning == true;
 
+            // 计时基准随内核状态维护：启动瞬间重置，未启动时显示 00:00:00 且不走
+            if (running && !_coreRunning)
+                _startTime = DateTime.Now;
+            _coreRunning = running;
+
             CoreButton.Content = Localization.Instance[running ? "StopCore" : "StartCore"];
             CoreButton.Style = running ? null : _accentButtonStyle;
+
+            UptimeText.Text = running ? FormatUptime(DateTime.Now - _startTime) : "00:00:00";
 
             // 状态药丸：两套配色都写在 XAML 里走资源，这里只切换显隐
             ConnectedPill.Visibility = running ? Visibility.Visible : Visibility.Collapsed;

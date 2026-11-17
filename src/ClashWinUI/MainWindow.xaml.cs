@@ -59,7 +59,10 @@ namespace ClashDotNetFramework
             }
 
             ExtendsContentIntoTitleBar = true;
-            SetTitleBar(NavView);
+            // 拖拽区域只限窗格头（logo + 应用名那 48px）。
+            // 不能把整个 NavView 设为标题栏：那样整个内容区变成非客户区，滚轮输入会被吞掉
+            //（实测：设置页/概览页全部无法用滚轮滚动，消息根本进不了 XAML）。
+            SetTitleBar(PaneTitleBar);
 
             Title = $"Clash .NET Framework v{UpdateChecker.Version}";
             AppWindow.Resize(new Windows.Graphics.SizeInt32(1180, 800));
@@ -80,6 +83,11 @@ namespace ClashDotNetFramework
             Global.Pages.Init();
             InitClash();
             InitWindowMonitor();
+
+            // 侧栏运行时长计时器：常驻运行，按内核实际状态决定显示值
+            //（未启动内核时显示 00 : 00 : 00，启动后从启动时刻开始计）
+            _connectionTimer.Tick += ConnectionTimer_Tick;
+            _connectionTimer.Start();
 
             // 菜单里夹着分组标题（NavigationViewItemHeader，不是 NavigationViewItem），
             // 不能按索引取第一项，否则会选中一个标题、且不触发页面导航。
@@ -418,12 +426,9 @@ namespace ClashDotNetFramework
 
         private void InitTimer()
         {
+            // 计时基准在 ConnectionTimer_Tick 里随内核状态自动维护；
+            // 这里只记录连接成功的时刻，让侧栏时长立刻对齐当前连接
             _beginStamp = DateTime.Now;
-            Global.RunOnUI(() =>
-            {
-                _connectionTimer.Tick += ConnectionTimer_Tick;
-                _connectionTimer.Start();
-            });
         }
 
         private void InitStatus(bool connected = true)
@@ -464,8 +469,17 @@ namespace ClashDotNetFramework
 
         private void ConnectionTimer_Tick(object sender, object e)
         {
-            if (_beginStamp == DateTime.MinValue)
+            // 运行时长跟随内核状态：未启动（或已停止）时归零不再走，启动后从启动时刻开始计
+            if (Global.clashController?.IsRunning != true)
+            {
+                ConnectionTime.Text = "00 : 00 : 00";
+                _beginStamp = DateTime.MinValue;
                 return;
+            }
+
+            if (_beginStamp == DateTime.MinValue)
+                _beginStamp = DateTime.Now;
+
             var ts = DateTime.Now - _beginStamp;
             ConnectionTime.Text = $"{ts.Hours:00} : {ts.Minutes:00} : {ts.Seconds:00}";
         }

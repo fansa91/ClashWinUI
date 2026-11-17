@@ -36,9 +36,13 @@
                         Background="Transparent"
                         SelectionChanged="NavView_SelectionChanged">
 
-            <!-- ==================== 自定义标题栏（与导航窗格融为一体） ==================== -->
+            <!-- ==================== 自定义标题栏（与导航窗格融为一体） ====================
+                 注意：拖拽区域只能是这 48px 的窗格头（PaneTitleBar）。
+                 不能像旧版那样把整个 NavView 设为标题栏 —— 那会把整个内容区变成非客户区，
+                 鼠标滚轮会被系统当作 NC 消息吞掉（设置页等无法滚动）。 -->
             <NavigationView.PaneHeader>
-                <Grid Height="48" Margin="4,0,0,0" ColumnSpacing="10">
+                <Grid x:Name="PaneTitleBar"
+                      Height="48" Margin="4,0,0,0" ColumnSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />

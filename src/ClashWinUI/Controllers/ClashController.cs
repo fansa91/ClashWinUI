@@ -37,6 +37,14 @@ namespace ClashDotNetFramework.Controllers
 
         public void Start(int port)
         {
+            // 端口未知（应用启动后从未启动过内核，Global.ClashControllerPort == 0）时退回自动选端口，
+            // 避免用 0 端口拉起内核导致连接不上
+            if (port <= 0)
+            {
+                Start();
+                return;
+            }
+
             PortHelper.CheckPort(Convert.ToUInt16(port), PortType.TCP);
             Global.ClashControllerPort = port;
             Elevated = Global.Settings.TunMode;
