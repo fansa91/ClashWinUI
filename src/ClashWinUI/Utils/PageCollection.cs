@@ -1,4 +1,6 @@
 ﻿using ClashDotNetFramework.Pages;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,18 @@ namespace ClashDotNetFramework.Utils
             logsPage = new LogsPage();
             settingsPage = new SettingsPage();
             supportPage = new SupportPage();
+
+            // 阶段 5：给所有页面里的卡片挂悬停轻抬动效。
+            // 本项目 XAML 编译器不加载本程序集，样式里不能引用 Motion，只能在代码侧统一挂接；
+            // 页面此刻已由 InitializeComponent 构建完毕，卡片（含派生样式）都在树里。
+            foreach (var page in new Page[]
+            {
+                overviewPage, proxiesPage, profilesPage, rulesPage,
+                connectionsPage, logsPage, settingsPage, supportPage
+            })
+            {
+                Motion.AttachHoverToCards(page);
+            }
         }
 
         /// <summary>
@@ -65,6 +79,17 @@ namespace ClashDotNetFramework.Utils
             logsPage?.RefreshLocalizedText();
             settingsPage?.RefreshLocalizedText();
             supportPage?.RefreshLocalizedText();
+        }
+
+        /// <summary>
+        /// 窗口最小化 / 隐藏到托盘时暂停带持续数据流的页面的界面刷新（阶段 5）。
+        /// 代理 / 规则 / 配置页没有持续推送，无需处理。
+        /// </summary>
+        public void SetUiPaused(bool paused)
+        {
+            overviewPage?.SetUiPaused(paused);
+            connectionsPage?.SetUiPaused(paused);
+            logsPage?.SetUiPaused(paused);
         }
     }
 }

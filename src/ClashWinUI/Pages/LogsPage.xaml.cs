@@ -111,6 +111,15 @@ namespace ClashDotNetFramework.Pages
                 Global.clashClient.LoggingReceivedEvt -= OnLogReceived;
         }
 
+        /// <summary>
+        /// 窗口最小化 / 隐藏时暂停列表刷新（阶段 5）：
+        /// 本页无计时器，OnLogReceived 里的 Global.UiPaused 守卫负责跳过追加与重建；
+        /// 页面自带的“暂停”按钮逻辑不受影响。
+        /// </summary>
+        public void SetUiPaused(bool paused)
+        {
+        }
+
         /// <summary>当前代理模式，缓存下来供语言切换时重新格式化文案</summary>
         private ModeType _mode = ModeType.Rule;
 
@@ -137,6 +146,10 @@ namespace ClashDotNetFramework.Pages
             var log = e.Response;
             Global.RunOnUI(() =>
             {
+                // 最小化 / 隐藏时不再追加与重建列表；恢复后由下一条日志带起刷新
+                if (Global.UiPaused)
+                    return;
+
                 _allLogs.Add(new LogItem
                 {
                     Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),

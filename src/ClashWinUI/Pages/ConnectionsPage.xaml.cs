@@ -107,11 +107,24 @@ namespace ClashDotNetFramework.Pages
                 Global.clashClient.ConnectionUpdatedEvt -= OnConnectionUpdated;
         }
 
+        /// <summary>
+        /// 窗口最小化 / 隐藏时暂停列表刷新（阶段 5）：
+        /// 本页无计时器，OnConnectionUpdated 里的 Global.UiPaused 守卫负责跳过整表重建；
+        /// 恢复后由下一个连接事件（约 1 秒内）带起刷新。
+        /// </summary>
+        public void SetUiPaused(bool paused)
+        {
+        }
+
         private void OnConnectionUpdated(object sender, ConnectionEvtArgs e)
         {
             var response = e.Response;
             Global.RunOnUI(() =>
             {
+                // 最小化 / 隐藏时跳过整表重建（列表页最贵的一步）；恢复后下一事件周期重建
+                if (Global.UiPaused)
+                    return;
+
                 try
                 {
                     _uploadTotal = response.UploadTotal;

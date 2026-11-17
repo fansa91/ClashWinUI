@@ -28,6 +28,12 @@ namespace ClashDotNetFramework
 
         public static bool Refresh = true;
 
+        /// <summary>
+        /// 窗口最小化或隐藏时为 true：此时仅暂停界面刷新（图表 / 列表 / 文字），
+        /// 内核、WebSocket 与数据采集照常运行；窗口恢复后自动继续。
+        /// </summary>
+        public static bool UiPaused = false;
+
         public static NotifyIconController iconController = new NotifyIconController();
 
         public static Setting Settings = new Setting();

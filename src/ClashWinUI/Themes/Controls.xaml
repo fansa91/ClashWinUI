@@ -109,6 +109,8 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
         <Setter Property="Padding" Value="{StaticResource CardPadding}" />
+        <!-- 悬停轻抬动效在代码侧统一挂接（Utils/Motion.AttachHoverToCards）：
+             本项目 XAML 编译器不加载本程序集，XAML 里不能引用同程序集类型 -->
     </Style>
 
     <!-- 概览页小组件卡：与 CardBorderStyle 同源，单独留一个 key 便于后续挂动效 -->

@@ -4,6 +4,8 @@ using ClashDotNetFramework.Controllers;
 using ClashDotNetFramework.Models.Converters;
 using ClashDotNetFramework.Models.Enums;
 using ClashDotNetFramework.Utils;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -22,6 +24,15 @@ namespace ClashDotNetFramework
         private bool _suppressSelection;
         private bool _isConnected = true;
         private string _coreVersion;
+
+        /// <summary>当前是否处于“窗口不可见”状态（最小化 / 隐藏到托盘），此时暂停界面刷新</summary>
+        private bool _uiPaused;
+
+        /// <summary>
+        /// 失去激活时的一次性延迟检查：最小化会先触发 Deactivated，
+        /// 而 OverlappedPresenter.State 可能略滞后，延一拍再读才可靠。
+        /// </summary>
+        private DispatcherQueueTimer _deferredPauseCheck;
 
         /// <summary>
         /// 本地化字符串表，供 x:Bind 使用
@@ -55,6 +66,7 @@ namespace ClashDotNetFramework
 
             Global.Pages.Init();
             InitClash();
+            InitWindowMonitor();
 
             // 菜单里夹着分组标题（NavigationViewItemHeader，不是 NavigationViewItem），
             // 不能按索引取第一项，否则会选中一个标题、且不触发页面导航。
@@ -198,7 +210,105 @@ namespace ClashDotNetFramework
                 _ => null
             };
             if (page != null)
+            {
+                bool changed = !ReferenceEquals(PageFrame.Content, page);
                 PageFrame.Content = page;
+
+                // 页面切换过渡：淡入 + 轻微上浮（200ms，WinUI 自带 Composition）。
+                // 同一页重复点击不重播，避免选中态刷新时整页闪动。
+                if (changed)
+                    Motion.PlayEntrance(page);
+            }
+        }
+
+        /// <summary>
+        /// 窗口可见性监测（阶段 5）：最小化或隐藏到托盘时暂停图表 / 列表 / 文字的界面刷新，
+        /// 数据链路（内核、WebSocket）照常运行，窗口恢复后自动继续。
+        /// 检测信号全部来自 WinUI / Windows App SDK 自带 API：
+        ///   Window.Activated —— 失去激活（最小化先走这一步）/ 重新激活；
+        ///   OverlappedPresenter.State —— 直接读窗口状态（无 StateChanged 事件，故用延迟检查）；
+        ///   AppWindow.Changed + IsVisible —— 覆盖 AppWindow.Hide()/Show() 的托盘隐藏路径。
+        /// </summary>
+        private void InitWindowMonitor()
+        {
+            try
+            {
+                _deferredPauseCheck = DispatcherQueue.GetForCurrentThread().CreateTimer();
+                _deferredPauseCheck.IsRepeating = false;
+                _deferredPauseCheck.Interval = TimeSpan.FromMilliseconds(250);
+                _deferredPauseCheck.Tick += (s, e) => EvaluateUiPause();
+
+                AppWindow.Changed += OnAppWindowChanged;
+            }
+            catch
+            {
+                _deferredPauseCheck = null;
+            }
+
+            Activated += OnWindowActivated;
+        }
+
+        private void OnWindowActivated(object sender, WindowActivatedEventArgs args)
+        {
+            if (args.WindowActivationState == WindowActivationState.Deactivated)
+            {
+                // 最小化时先失激活再变状态；延迟一拍读 State，避免读到还原态漏判
+                if (_deferredPauseCheck != null)
+                {
+                    _deferredPauseCheck.Stop();
+                    _deferredPauseCheck.Start();
+                }
+            }
+            else
+            {
+                _deferredPauseCheck?.Stop();
+                EvaluateUiPause();
+            }
+        }
+
+        private void OnAppWindowChanged(AppWindow sender, AppWindowChangedEventArgs args)
+            => EvaluateUiPause();
+
+        /// <summary>按当前窗口状态决定是否暂停界面刷新；状态未变时调用是空操作</summary>
+        private void EvaluateUiPause()
+        {
+            bool minimized = false;
+            try
+            {
+                minimized = AppWindow.Presenter is OverlappedPresenter presenter
+                    && presenter.State == OverlappedPresenterState.Minimized;
+            }
+            catch
+            {
+            }
+
+            bool hidden = false;
+            try
+            {
+                hidden = !AppWindow.IsVisible;
+            }
+            catch
+            {
+            }
+
+            SetUiPaused(minimized || hidden);
+        }
+
+        private void SetUiPaused(bool paused)
+        {
+            if (_uiPaused == paused)
+                return;
+
+            _uiPaused = paused;
+            Global.UiPaused = paused;
+
+            // 侧栏运行时长：暂停期间停止计时器，恢复后继续（时间基准不变，不重置）
+            if (paused)
+                _connectionTimer.Stop();
+            else
+                _connectionTimer.Start();
+
+            Global.Pages?.SetUiPaused(paused);
         }
 
         private void InitClash()
@@ -321,6 +431,10 @@ namespace ClashDotNetFramework
 
         private void OnTrafficUpdated(object sender, TrafficEvtArgs e)
         {
+            // 窗口最小化 / 隐藏时不刷新侧栏文字；下一个事件周期恢复显示
+            if (Global.UiPaused)
+                return;
+
             var traffic = e.Response;
             Global.RunOnUI(() =>
             {

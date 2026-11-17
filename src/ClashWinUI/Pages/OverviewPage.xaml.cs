@@ -51,6 +51,10 @@ namespace ClashDotNetFramework.Pages
             InitializeComponent();
             DataContext = Localization.Instance;
 
+            // 状态药丸出现时轻微放大 + 淡入，内核启停的状态切换更有反馈（阶段 5）
+            Motion.SetPopInOnShow(ConnectedPill);
+            Motion.SetPopInOnShow(DisconnectedPill);
+
             // 记住强调按钮样式：内核运行时切回普通按钮，重新启动时再套回来
             _accentButtonStyle = CoreButton.Style;
 
@@ -161,6 +165,23 @@ namespace ClashDotNetFramework.Pages
         }
 
         /// <summary>
+        /// 窗口最小化 / 隐藏时暂停界面刷新（阶段 5）：运行时长计时器停掉，
+        /// 流量 / 连接事件里的文字与图表更新由 OnTrafficUpdated / OnConnectionUpdated 里的守卫跳过。
+        /// 恢复时若页面仍在前台则重新启动计时器；时间基准不重置，运行时长不回退。
+        /// </summary>
+        public void SetUiPaused(bool paused)
+        {
+            if (paused)
+            {
+                _uptimeTimer.Stop();
+            }
+            else if (IsLoaded)
+            {
+                _uptimeTimer.Start();
+            }
+        }
+
+        /// <summary>
         /// 订阅流量与连接事件。内核启停会重建 ClashClient，页面停留期间也要能重新挂上，
         /// 否则从这张卡启停内核后，数值会停在上一个实例上不再刷新。
         /// </summary>
@@ -219,8 +240,20 @@ namespace ClashDotNetFramework.Pages
             var traffic = e.Response;
             Global.RunOnUI(() =>
             {
+                // 最小化 / 隐藏窗口时跳过图表与文字刷新；数据链路照常，恢复后下一事件继续
+                if (Global.UiPaused)
+                    return;
+
+                string oldUpload = UploadSpeedText.Text;
+                string oldDownload = DownloadSpeedText.Text;
                 SplitSpeed(UnitConverter.FormatBytes(traffic.Up), UploadSpeedText, UploadUnitText);
                 SplitSpeed(UnitConverter.FormatBytes(traffic.Down), DownloadSpeedText, DownloadUnitText);
+
+                // 数值变化渐变：轻微变亮一次，表示“已更新”而不闪烁
+                if (oldUpload != UploadSpeedText.Text)
+                    Motion.PlayValuePulse(UploadSpeedText);
+                if (oldDownload != DownloadSpeedText.Text)
+                    Motion.PlayValuePulse(DownloadSpeedText);
 
                 // 有任意方向流量后隐藏"等待流量"提示
                 if (!_hasTraffic && (traffic.Up > 0 || traffic.Down > 0))
@@ -243,9 +276,23 @@ namespace ClashDotNetFramework.Pages
             var response = e.Response;
             Global.RunOnUI(() =>
             {
+                if (Global.UiPaused)
+                    return;
+
+                string oldCount = ConnectionCountText.Text;
+                string oldUpload = TotalUploadText.Text;
+                string oldDownload = TotalDownloadText.Text;
+
                 ConnectionCountText.Text = (response.Connections?.Count ?? 0).ToString();
                 TotalUploadText.Text = UnitConverter.FormatBytes(response.UploadTotal);
                 TotalDownloadText.Text = UnitConverter.FormatBytes(response.DownloadTotal);
+
+                if (oldCount != ConnectionCountText.Text)
+                    Motion.PlayValuePulse(ConnectionCountText);
+                if (oldUpload != TotalUploadText.Text)
+                    Motion.PlayValuePulse(TotalUploadText);
+                if (oldDownload != TotalDownloadText.Text)
+                    Motion.PlayValuePulse(TotalDownloadText);
             });
         }
 
@@ -347,7 +394,8 @@ namespace ClashDotNetFramework.Pages
             if (check == null || text == null)
                 return;
 
-            check.Opacity = selected ? 1 : 0;
+            // 选中标记的点亮 / 熄灭用 150ms 透明度过渡，替代原来的一步切换
+            Motion.AnimateOpacity(check, selected ? 1 : 0);
             text.Foreground = ThemeBrush(selected ? "BrandPrimaryBrush" : "TextSecondaryBrush");
             text.FontWeight = selected ? FontWeights.SemiBold : FontWeights.Normal;
         }
