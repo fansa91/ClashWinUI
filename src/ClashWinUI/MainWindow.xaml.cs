@@ -84,6 +84,18 @@ namespace ClashDotNetFramework
             InitClash();
             InitWindowMonitor();
 
+            // 侧栏折叠（窄条 48px）时，底部只保留状态灯与设置图标：
+            // 版本号 / 流量 / 时长这类文字在窄条里会竖排溢出（折叠态显示问题）。
+            // 收起窗格在 PaneDisplayMode=Left 下不触发 DisplayMode 变更通知，
+            // 因此 IsPaneOpen 与 DisplayMode 两个信号都要监听。
+            NavView.RegisterPropertyChangedCallback(NavigationView.DisplayModeProperty, OnPaneStateChanged);
+            NavView.RegisterPropertyChangedCallback(NavigationView.IsPaneOpenProperty, OnPaneStateChanged);
+            UpdatePaneFooterState();
+
+            // 窄窗自适应折叠改为代码驱动：AdaptiveTrigger 在部分环境下对窗格折叠不生效，
+            // 而 RootGrid.SizeChanged 实测可靠；宽窗恢复 Left 模式，不影响手动收起窗格
+            RootGrid.SizeChanged += (s, e) => UpdateAdaptivePane(e.NewSize.Width);
+
             // 侧栏运行时长计时器：常驻运行，按内核实际状态决定显示值
             //（未启动内核时显示 00 : 00 : 00，启动后从启动时刻开始计）
             _connectionTimer.Tick += ConnectionTimer_Tick;
@@ -268,6 +280,63 @@ namespace ClashDotNetFramework
                 if (changed)
                     Motion.PlayEntrance(page);
             }
+        }
+
+        private void OnPaneStateChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            UpdatePaneFooterState();
+        }
+
+        /// <summary>
+        /// 窄窗自适应折叠：宽度低于 968（与视觉状态的阈值一致）时折叠为图标栏，
+        /// 恢复宽窗时切回 Left 模式。手动收起窗格（Left + IsPaneOpen=false）不受影响。
+        /// </summary>
+        private void UpdateAdaptivePane(double width)
+        {
+            try
+            {
+                if (width < 968)
+                {
+                    if (NavView.PaneDisplayMode != NavigationViewPaneDisplayMode.LeftCompact)
+                        NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                }
+                else if (NavView.PaneDisplayMode == NavigationViewPaneDisplayMode.LeftCompact)
+                {
+                    NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// 折叠态（窄条）下隐藏侧栏底部的文字区域：版本号 / 流量 / 时长 / 状态文字与窗格头标题，
+        /// 只保留状态灯和设置图标；展开时恢复。窄窗（自适应折叠）与手动收起窗格共用同一路径。
+        /// </summary>
+        private void UpdatePaneFooterState()
+        {
+            // 折叠判定：窄窗自适应折叠（DisplayMode≠Expanded）或手动收起窗格（IsPaneOpen=false）
+            bool compact = NavView.DisplayMode != NavigationViewDisplayMode.Expanded || !NavView.IsPaneOpen;
+            UpdatePaneFooterCompact(compact);
+        }
+
+        /// <summary>
+        /// 折叠态（窄条）下隐藏侧栏底部的文字区域的具体实现。
+        /// </summary>
+        private void UpdatePaneFooterCompact(bool compact)
+        {
+            var footer = compact ? Visibility.Collapsed : Visibility.Visible;
+            PaneTrafficBox.Visibility = footer;
+            StatusText.Visibility = footer;          // 状态灯（StatusLight）保留，只藏文字
+            ConnectionTime.Visibility = footer;
+            CoreVersionText.Visibility = footer;
+            PaneDivider.Visibility = footer;
+            SettingsFooterText.Visibility = footer;
+            AppTitleText.Visibility = footer;        // 折叠时窗格头只留 logo
+            FooterSettingsButton.HorizontalContentAlignment = compact
+                ? HorizontalAlignment.Center
+                : HorizontalAlignment.Left;
         }
 
         /// <summary>

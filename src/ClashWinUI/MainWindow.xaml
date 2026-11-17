@@ -118,7 +118,8 @@
                 <StackPanel Padding="12,4,12,12" Spacing="8">
 
                     <!-- 实时上下行流量（等宽字体，避免数字跳动） -->
-                    <Border Style="{StaticResource SubtleCardBorderStyle}"
+                    <Border x:Name="PaneTrafficBox"
+                            Style="{StaticResource SubtleCardBorderStyle}"
                             Padding="10,8"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <StackPanel Spacing="6">
@@ -183,7 +184,8 @@
                                TextWrapping="Wrap"
                                Padding="2,0" />
 
-                    <Rectangle Height="1"
+                    <Rectangle x:Name="PaneDivider"
+                               Height="1"
                                Margin="0,4"
                                Fill="{ThemeResource SurfaceDividerBrush}" />
 
@@ -201,7 +203,8 @@
                                 Background="{ThemeResource BrandSubtleBrush}"
                                 Visibility="Collapsed" />
 
-                        <Button Grid.ColumnSpan="2"
+                        <Button x:Name="FooterSettingsButton"
+                                Grid.ColumnSpan="2"
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Padding="8,0"
@@ -214,7 +217,8 @@
                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                           FontSize="16"
                                           VerticalAlignment="Center" />
-                                <TextBlock Text="{x:Bind Loc.Settings, Mode=OneWay}"
+                                <TextBlock x:Name="SettingsFooterText"
+                                           Text="{x:Bind Loc.Settings, Mode=OneWay}"
                                            VerticalAlignment="Center"
                                            TextTrimming="CharacterEllipsis" />
                             </StackPanel>
