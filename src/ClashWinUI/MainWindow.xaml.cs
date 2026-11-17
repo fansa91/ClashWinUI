@@ -472,9 +472,17 @@ namespace ClashDotNetFramework
             // 运行时长跟随内核状态：未启动（或已停止）时归零不再走，启动后从启动时刻开始计
             if (Global.clashController?.IsRunning != true)
             {
+                if (_isConnected)
+                    InitStatus(false);   // 手动停止内核后侧栏状态也要同步
                 ConnectionTime.Text = "00 : 00 : 00";
                 _beginStamp = DateTime.MinValue;
                 return;
+            }
+
+            if (!_isConnected)
+            {
+                InitStatus(true);                // 手动启动内核后侧栏状态随之点亮
+                Task.Run(() => InitVersion());   // 侧栏内核版本也要回填（探测期拿不到，启动成功后再取）
             }
 
             if (_beginStamp == DateTime.MinValue)
