@@ -91,7 +91,8 @@ namespace ClashDotNetFramework
             NavView.RegisterPropertyChangedCallback(NavigationView.DisplayModeProperty, OnPaneStateChanged);
             NavView.RegisterPropertyChangedCallback(NavigationView.IsPaneOpenProperty, OnPaneStateChanged);
             UpdatePaneFooterState();
-
+
+
             // 窄窗自适应折叠改为代码驱动：AdaptiveTrigger 在部分环境下对窗格折叠不生效，
             // 而 RootGrid.SizeChanged 实测可靠；宽窗恢复 Left 模式，不影响手动收起窗格
             RootGrid.SizeChanged += (s, e) => UpdateAdaptivePane(e.NewSize.Width);
