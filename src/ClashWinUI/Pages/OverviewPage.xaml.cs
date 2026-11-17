@@ -41,27 +41,7 @@ namespace ClashDotNetFramework.Pages
             InitializeComponent();
             DataContext = Localization.Instance;
 
-            Series = new ISeries[]
-            {
-                new LineSeries<double>
-                {
-                    Name = "Upload",
-                    Values = _upload,
-                    LineSmoothness = 1,
-                    GeometrySize = 0,
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.DeepSkyBlue) { StrokeThickness = 2 }
-                },
-                new LineSeries<double>
-                {
-                    Name = "Download",
-                    Values = _download,
-                    LineSmoothness = 1,
-                    GeometrySize = 0,
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.MediumSeaGreen) { StrokeThickness = 2 }
-                }
-            };
+            BuildSeries();
 
             // 运行时赋值而非 x:Bind：LiveCharts 的 Axis[] 在 x:Bind 生成代码里类型解析会失败
             TrafficChart.YAxes = YAxes;
@@ -73,6 +53,45 @@ namespace ClashDotNetFramework.Pages
                 UpdateCoreButton();
             };
         }
+
+        /// <summary>
+        /// 按当前调色板重建曲线。图表画笔是 SkiaSharp 对象，不参与 ThemeResource，
+        /// 主题切换后必须重建一次才能换色。
+        /// </summary>
+        private void BuildSeries()
+        {
+            Series = new ISeries[]
+            {
+                new LineSeries<double>
+                {
+                    Name = "Upload",
+                    Values = _upload,
+                    LineSmoothness = 1,
+                    GeometrySize = 0,
+                    Fill = null,
+                    Stroke = new SolidColorPaint(ToSkColor(ThemeTokens.ChartUpload)) { StrokeThickness = 2 }
+                },
+                new LineSeries<double>
+                {
+                    Name = "Download",
+                    Values = _download,
+                    LineSmoothness = 1,
+                    GeometrySize = 0,
+                    Fill = null,
+                    Stroke = new SolidColorPaint(ToSkColor(ThemeTokens.ChartDownload)) { StrokeThickness = 2 }
+                }
+            };
+        }
+
+        /// <summary>主题切换后重算图表配色</summary>
+        public void RefreshSemanticColors()
+        {
+            BuildSeries();
+            TrafficChart.Series = Series;
+        }
+
+        private static SKColor ToSkColor(Windows.UI.Color color)
+            => new SKColor(color.R, color.G, color.B, color.A);
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {

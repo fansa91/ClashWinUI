@@ -1,0 +1,59 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        调色板 · 深色
+        ==============
+        键名与 Palette.Classic / Palette.Modern 完全一致。
+        表面使用半透明白叠加在 Mica 之上，保留材质透视感；
+        语义色改为高亮版本，保证深底上的可读性。
+    -->
+
+    <!-- ==================== 表面 ==================== -->
+    <SolidColorBrush x:Key="AppWindowBackgroundBrush" Color="#1C1C1C" />
+    <SolidColorBrush x:Key="SurfaceCardBrush" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceCardHoverBrush" Color="#1FFFFFFF" />
+    <SolidColorBrush x:Key="SurfaceCardStrokeBrush" Color="#24FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceCardStrokeHoverBrush" Color="#3DFFFFFF" />
+    <SolidColorBrush x:Key="SurfaceSubtleBrush" Color="#0AFFFFFF" />
+    <SolidColorBrush x:Key="SurfaceSubtleStrokeBrush" Color="#1FFFFFFF" />
+    <SolidColorBrush x:Key="SurfaceDividerBrush" Color="#26FFFFFF" />
+
+    <!-- ==================== 品牌 / 强调 ==================== -->
+    <SolidColorBrush x:Key="BrandPrimaryBrush" Color="#2E8F82" />
+    <SolidColorBrush x:Key="BrandPrimaryHoverBrush" Color="#3AA99A" />
+    <SolidColorBrush x:Key="BrandSubtleBrush" Color="#1B3A36" />
+    <SolidColorBrush x:Key="TextOnBrandBrush" Color="#FFFFFF" />
+
+    <!-- ==================== 文字层级 ==================== -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F5F5F5" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B9B9B9" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#8C8C8C" />
+
+    <!-- ==================== 语义色 ==================== -->
+    <SolidColorBrush x:Key="StatusSuccessBrush" Color="#6CCB5F" />
+    <SolidColorBrush x:Key="StatusSuccessSubtleBrush" Color="#1E3A1B" />
+    <SolidColorBrush x:Key="StatusWarningBrush" Color="#E8C547" />
+    <SolidColorBrush x:Key="StatusWarningSubtleBrush" Color="#3A2E00" />
+    <SolidColorBrush x:Key="StatusDangerBrush" Color="#FF8A80" />
+    <SolidColorBrush x:Key="StatusDangerSubtleBrush" Color="#42191B" />
+    <SolidColorBrush x:Key="StatusNeutralBrush" Color="#C8C8C8" />
+    <SolidColorBrush x:Key="StatusNeutralSubtleBrush" Color="#2E2E2E" />
+    <!-- 信息色：用于"负载均衡"等既非成功也非警告的分类 -->
+    <SolidColorBrush x:Key="StatusInfoBrush" Color="#A9A2F0" />
+    <SolidColorBrush x:Key="StatusInfoSubtleBrush" Color="#262150" />
+
+    <!-- ==================== 图表 ==================== -->
+    <SolidColorBrush x:Key="ChartUploadBrush" Color="#4FC3F7" />
+    <SolidColorBrush x:Key="ChartDownloadBrush" Color="#6FD08C" />
+    <SolidColorBrush x:Key="ChartGridBrush" Color="#3A3A3A" />
+
+    <!-- ==================== WinUI 内置强调键覆写 ==================== -->
+    <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#2E8F82" />
+    <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#5FBFAE" />
+    <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#7FD2C4" />
+    <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#D9F0EB" />
+
+</ResourceDictionary>

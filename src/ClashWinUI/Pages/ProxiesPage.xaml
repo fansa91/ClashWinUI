@@ -23,7 +23,7 @@
                 <TextBlock Text="{x:Bind Loc.SelectGroupHint, Mode=OneWay}"
                            TextWrapping="Wrap"
                            Style="{StaticResource SecondaryCaptionTextBlockStyle}"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                           Foreground="{ThemeResource TextSecondaryBrush}" />
             </StackPanel>
             <Border Grid.Column="1" Style="{StaticResource CountBadgeStyle}">
                 <TextBlock x:Name="GroupCountText"
@@ -39,8 +39,8 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+            <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                    BorderBrush="{ThemeResource SurfaceDividerBrush}"
                     BorderThickness="1"
                     CornerRadius="6"
                     Padding="2"
@@ -89,7 +89,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <Grid ColumnSpacing="8">
@@ -167,7 +167,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- 当前组标题 -->
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <Grid ColumnSpacing="10">
@@ -233,13 +233,13 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <Grid MinWidth="360">
-                                    <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    <Border Background="{ThemeResource SurfaceCardBrush}"
+                                            BorderBrush="{ThemeResource SurfaceCardStrokeBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8"
                                             Padding="12" />
-                                    <Border Background="{ThemeResource AccentFillColorSecondaryBrush}"
-                                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                    <Border Background="{ThemeResource BrandSubtleBrush}"
+                                            BorderBrush="{ThemeResource BrandPrimaryBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8"
                                             Padding="12"
@@ -252,7 +252,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Grid Grid.Column="0" Width="3">
                                             <Border CornerRadius="2"
-                                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                    Background="{ThemeResource BrandPrimaryBrush}"
                                                     Visibility="{Binding IsSelected, Mode=OneWay, Converter={StaticResource BoolToVisibility}}" />
                                         </Grid>
                                         <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">

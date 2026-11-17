@@ -45,11 +45,11 @@
                                    MaxWidth="360" />
                         <Border x:Name="TargetActiveBadge"
                                 Style="{StaticResource TagBorderStyle}"
-                                Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                Background="{ThemeResource BrandSubtleBrush}"
                                 Visibility="Collapsed">
                             <TextBlock Text="{x:Bind Loc.Activated, Mode=OneWay}"
                                        Style="{StaticResource TagTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+                                       Foreground="{ThemeResource TextPrimaryBrush}" />
                         </Border>
                     </StackPanel>
                     <TextBlock x:Name="TargetStatsText"
@@ -162,11 +162,11 @@
                                 </Border>
                                 <!-- 当前生效徽章 -->
                                 <Border Style="{StaticResource TagBorderStyle}"
-                                        Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                        Background="{ThemeResource BrandSubtleBrush}"
                                         Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}">
                                     <TextBlock Text="{Binding CurrentProfile, Source={StaticResource Loc}}"
                                                Style="{StaticResource TagTextBlockStyle}"
-                                               Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+                                               Foreground="{ThemeResource TextPrimaryBrush}" />
                                 </Border>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="12" Opacity="0.7" Margin="0,4,0,0">

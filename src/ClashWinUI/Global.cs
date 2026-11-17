@@ -4,7 +4,6 @@ using ClashDotNetFramework.Models;
 using ClashDotNetFramework.Utils;
 using Microsoft.UI.Dispatching;
 using System;
-using Windows.UI;
 
 namespace ClashDotNetFramework
 {
@@ -13,8 +12,6 @@ namespace ClashDotNetFramework
         public const string EOF = "\r\n";
 
         public static readonly string ClashDotNetFrameworkDir = AppDomain.CurrentDomain.BaseDirectory;
-
-        public static Color ProxyColor = Color.FromArgb((byte)Math.Round(0.9 * 255), 179, 179, 179);
 
         /// <summary>
         /// 当前是否为深色主题，供无法直接访问 ThemeResource 的代码 (转换器等) 判断配色

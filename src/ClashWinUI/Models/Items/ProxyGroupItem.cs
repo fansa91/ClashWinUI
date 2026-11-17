@@ -143,8 +143,8 @@ namespace ClashDotNetFramework.Models.Items
             switch (Type)
             {
                 case ProxyType.Selector:
-                    foreground = dark ? Color.FromArgb(0xFF, 0x85, 0xB7, 0xEB) : Color.FromArgb(0xFF, 0x18, 0x5F, 0xA5);
-                    background = dark ? Color.FromArgb(0xFF, 0x0C, 0x44, 0x7C) : Color.FromArgb(0xFF, 0xE6, 0xF1, 0xFB);
+                    foreground = SemanticPalette.Brand(dark);
+                    background = ThemeTokens.BrandSubtle;
                     break;
                 case ProxyType.URLTest:
                     foreground = SemanticPalette.Success(dark);
@@ -155,8 +155,8 @@ namespace ClashDotNetFramework.Models.Items
                     background = SemanticPalette.CautionBackground(dark);
                     break;
                 case ProxyType.LoadBalance:
-                    foreground = dark ? Color.FromArgb(0xFF, 0xAF, 0xA9, 0xEC) : Color.FromArgb(0xFF, 0x53, 0x4A, 0xB7);
-                    background = dark ? Color.FromArgb(0xFF, 0x26, 0x21, 0x5C) : Color.FromArgb(0xFF, 0xEE, 0xED, 0xFE);
+                    foreground = SemanticPalette.Info(dark);
+                    background = SemanticPalette.InfoBackground(dark);
                     break;
                 case ProxyType.Relay:
                 default:

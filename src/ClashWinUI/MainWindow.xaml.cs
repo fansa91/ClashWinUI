@@ -54,9 +54,17 @@ namespace ClashDotNetFramework
 
         public void ApplyTheme(ThemeType theme)
         {
+            // 三套主题 = 三份调色板字典（Themes/Palette.*.xaml），整份替换；
+            // 深浅明暗另外通过 RequestedTheme 交给 WinUI 内置控件。
+            // 两者叠加后：经典 / 现代是浅色底 + 不同强调色，深色是深色底 + 青绿强调。
+            ThemeManager.Apply(theme);
+
             bool dark = theme == ThemeType.Dark;
             Global.IsDarkTheme = dark;
             RootGrid.RequestedTheme = dark ? ElementTheme.Dark : ElementTheme.Light;
+
+            // 语义色由代码算出来的控件（延迟徽章、协议标签、图表画笔）不走 ThemeResource，
+            // 需要主动通知重算。
             Global.Pages?.RefreshSemanticColors();
         }
 

@@ -8,43 +8,39 @@ using Windows.UI;
 namespace ClashDotNetFramework.Models.Converters
 {
     /// <summary>
-    /// 语义色板：集中管理“成功 / 警告 / 严重 / 中性”四类语义颜色。
-    /// 所有颜色都在此处以代码方式定义，XAML 中不再出现任何硬编码色值；
-    /// 深浅两套取值根据 <see cref="Global.IsDarkTheme"/> 选择，保证浅色 / 深色主题下均有足够对比度。
+    /// 语义色板：集中管理「成功 / 警告 / 严重 / 中性」四类语义颜色。
+    ///
+    /// 色值本身不再写在这里，而是来自当前主题的调色板（Themes/Palette.*.xaml），
+    /// 由 <see cref="ThemeTokens"/> 缓存后供转换器等无法使用 ThemeResource 的场景读取。
+    /// 这样新增一套主题时只需要加一个 xaml 文件，代码侧无需改动。
+    ///
+    /// 参数 <c>dark</c> 保留是为了兼容既有调用点，实际取值已由调色板决定。
     /// </summary>
     public static class SemanticPalette
     {
-        public static Color Success(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0x6C, 0xCB, 0x5F)
-            : Color.FromArgb(0xFF, 0x0F, 0x7B, 0x0F);
+        public static Color Success(bool dark) => ThemeTokens.Success;
 
-        public static Color SuccessBackground(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0x1F, 0x3A, 0x1B)
-            : Color.FromArgb(0xFF, 0xD8, 0xF2, 0xD5);
+        public static Color SuccessBackground(bool dark) => ThemeTokens.SuccessSubtle;
 
-        public static Color Caution(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0xFC, 0xE1, 0x00)
-            : Color.FromArgb(0xFF, 0x8A, 0x50, 0x00);
+        public static Color Caution(bool dark) => ThemeTokens.Warning;
 
-        public static Color CautionBackground(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0x3B, 0x2C, 0x00)
-            : Color.FromArgb(0xFF, 0xFF, 0xF3, 0xCE);
+        public static Color CautionBackground(bool dark) => ThemeTokens.WarningSubtle;
 
-        public static Color Critical(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0xFF, 0x99, 0xA4)
-            : Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C);
+        public static Color Critical(bool dark) => ThemeTokens.Danger;
 
-        public static Color CriticalBackground(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0x42, 0x14, 0x18)
-            : Color.FromArgb(0xFF, 0xFD, 0xE7, 0xE9);
+        public static Color CriticalBackground(bool dark) => ThemeTokens.DangerSubtle;
 
-        public static Color Neutral(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0xC8, 0xC8, 0xC8)
-            : Color.FromArgb(0xFF, 0x6B, 0x6B, 0x6B);
+        public static Color Neutral(bool dark) => ThemeTokens.Neutral;
 
-        public static Color NeutralBackground(bool dark) => dark
-            ? Color.FromArgb(0xFF, 0x2C, 0x2C, 0x2A)
-            : Color.FromArgb(0xFF, 0xF1, 0xEF, 0xE8);
+        public static Color NeutralBackground(bool dark) => ThemeTokens.NeutralSubtle;
+
+        /// <summary>强调色，用于协议 / 策略等中性的分类标签</summary>
+        public static Color Brand(bool dark) => ThemeTokens.Brand;
+
+        /// <summary>信息色，用于"负载均衡"这类既非成功也非警告的分类</summary>
+        public static Color Info(bool dark) => ThemeTokens.Info;
+
+        public static Color InfoBackground(bool dark) => ThemeTokens.InfoSubtle;
     }
 
     public class BoolToVisibilityConverter : IValueConverter
@@ -262,12 +258,11 @@ namespace ClashDotNetFramework.Models.Converters
             Color color;
 
             if (string.Equals(parameter as string, "network", StringComparison.OrdinalIgnoreCase))
-                color = text == "udp" ? SemanticPalette.Caution(dark)
-                    : Color.FromArgb(0xFF, 0x37, 0x8A, 0xDD);
+                color = text == "udp" ? SemanticPalette.Caution(dark) : SemanticPalette.Brand(dark);
             else
                 color = text == "reject" ? SemanticPalette.Critical(dark)
                     : text == "direct" ? SemanticPalette.Neutral(dark)
-                    : Color.FromArgb(0xFF, 0x37, 0x8A, 0xDD);
+                    : SemanticPalette.Brand(dark);
 
             return new SolidColorBrush(color);
         }

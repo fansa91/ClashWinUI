@@ -48,11 +48,11 @@
                             Height="26"
                             CornerRadius="6"
                             VerticalAlignment="Center"
-                            Background="{ThemeResource AccentFillColorDefaultBrush}">
+                            Background="{ThemeResource BrandPrimaryBrush}">
                         <FontIcon Glyph="&#xE774;"
                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                   FontSize="14"
-                                  Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+                                  Foreground="{ThemeResource TextOnBrandBrush}" />
                     </Border>
 
                     <TextBlock x:Name="AppTitleText"
@@ -120,7 +120,7 @@
                                 <FontIcon Glyph="&#xE898;"
                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                           FontSize="12"
-                                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                          Foreground="{ThemeResource BrandPrimaryBrush}"
                                           VerticalAlignment="Center" />
                                 <TextBlock x:Name="UploadSpeed"
                                            Grid.Column="1"
@@ -139,7 +139,7 @@
                                 <FontIcon Glyph="&#xE896;"
                                           FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                           FontSize="12"
-                                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                          Foreground="{ThemeResource BrandPrimaryBrush}"
                                           VerticalAlignment="Center" />
                                 <TextBlock x:Name="DownloadSpeed"
                                            Grid.Column="1"
@@ -178,7 +178,7 @@
 
                     <Rectangle Height="1"
                                Margin="0,4"
-                               Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                               Fill="{ThemeResource SurfaceDividerBrush}" />
 
                     <!-- 底部“设置”入口 -->
                     <Grid Height="36" Margin="-8,0,-8,0">
@@ -191,7 +191,7 @@
                         <Border x:Name="SettingsFooterHighlight"
                                 Grid.ColumnSpan="2"
                                 CornerRadius="4"
-                                Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                Background="{ThemeResource BrandSubtleBrush}"
                                 Visibility="Collapsed" />
 
                         <Button Grid.ColumnSpan="2"

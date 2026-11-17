@@ -25,7 +25,7 @@
             </Border>
             <TextBlock x:Name="TabHintText" Text="{x:Bind Loc.TabHint, Mode=OneWay}"
                        Style="{StaticResource SecondaryCaptionTextBlockStyle}"
-                       Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                       Foreground="{ThemeResource TextTertiaryBrush}" />
 
             <!-- ===== 页签：常规 / general · tun ===== -->
             <Grid x:Name="TabGeneral" Visibility="Visible">
@@ -33,13 +33,13 @@
             <!-- 常规设置 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.General, Mode=OneWay}"
                                    Style="{StaticResource SectionHeaderTextBlockStyle}" />
                     </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyTun, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeyTun, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel Margin="12,12,12,12" Spacing="8">
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
@@ -87,7 +87,7 @@
                                    Margin="0,-4,0,4"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -107,7 +107,7 @@
             <!-- 外观设置 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.Appearance, Mode=OneWay}"
@@ -173,13 +173,13 @@
             <!-- 端口设置 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.Ports, Mode=OneWay}"
                                    Style="{StaticResource SectionHeaderTextBlockStyle}" />
                     </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyPorts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeyPorts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel Margin="12,12,12,12" Spacing="8">
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
@@ -208,7 +208,7 @@
                         <TextBlock Text="{x:Bind Loc.PortsHint, Mode=OneWay}"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -241,13 +241,13 @@
             <!-- 网络增强 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.NetworkBoost, Mode=OneWay}"
                                    Style="{StaticResource SectionHeaderTextBlockStyle}" />
                     </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeySniffer, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeySniffer, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel Margin="12,12,12,12" Spacing="8">
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
@@ -387,7 +387,7 @@
                                    Margin="0,4,0,0"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -395,7 +395,7 @@
             <!-- DNS 高级：默认收起，避免 5 个多行输入框把设置页拉得过长 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Grid Background="{ThemeResource SurfaceSubtleBrush}"
                           Padding="{StaticResource CardPadding}"
                           CornerRadius="{StaticResource ControlCornerRadius}"
                           ColumnSpacing="8">
@@ -411,7 +411,7 @@
                                 Content="{x:Bind Loc.Expand, Mode=OneWay}"
                                 Click="DnsToggleButton_Click" />
                     </Grid>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyDns, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeyDns, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel x:Name="DnsAdvancedPanel"
                                 Margin="12,12,12,12"
                                 Spacing="8"
@@ -493,7 +493,7 @@
                                    Margin="0,4,0,0"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -507,13 +507,13 @@
             <!-- 局域网访问控制 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.LanAccess, Mode=OneWay}"
                                    Style="{StaticResource SectionHeaderTextBlockStyle}" />
                     </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyLan, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeyLan, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel Margin="12,12,12,12" Spacing="8">
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
@@ -606,7 +606,7 @@
                                    Margin="0,4,0,0"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -614,13 +614,13 @@
             <!-- 域名映射与端口转发 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.MappingForward, Mode=OneWay}"
                                    Style="{StaticResource SectionHeaderTextBlockStyle}" />
                     </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyHosts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeyHosts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel Margin="12,12,12,12" Spacing="8">
                         <TextBlock Text="{x:Bind Loc.CustomHosts, Mode=OneWay}"
                                    Style="{StaticResource ColumnCellTextBlockStyle}" />
@@ -636,7 +636,7 @@
                         <TextBlock Text="{x:Bind Loc.HostsHint, Mode=OneWay}"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                         <TextBlock Text="{x:Bind Loc.CustomTunnels, Mode=OneWay}"
                                    Margin="0,8,0,0"
                                    Style="{StaticResource ColumnCellTextBlockStyle}" />
@@ -652,7 +652,7 @@
                         <TextBlock Text="{x:Bind Loc.TunnelsHint, Mode=OneWay}"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -666,13 +666,13 @@
             <!-- 自定义配置片段 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.CustomSnippet, Mode=OneWay}"
                                    Style="{StaticResource SectionHeaderTextBlockStyle}" />
                     </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyCustom, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock Text="{x:Bind Loc.OfficialKeyCustom, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
                     <StackPanel Margin="12,12,12,12" Spacing="8">
                         <TextBox x:Name="SnippetBox"
                                  Tag="snippet"
@@ -686,7 +686,7 @@
                         <TextBlock Text="{x:Bind Loc.SnippetHint, Mode=OneWay}"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -694,7 +694,7 @@
             <!-- 高级设置 -->
             <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
                 <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
                             Padding="{StaticResource CardPadding}"
                             CornerRadius="{StaticResource ControlCornerRadius}">
                         <TextBlock Text="{x:Bind Loc.Advanced, Mode=OneWay}"
