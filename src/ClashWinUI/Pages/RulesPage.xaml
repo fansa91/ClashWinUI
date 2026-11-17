@@ -28,7 +28,7 @@
 
         <!-- 工具栏：搜索 + 类型 / 策略筛选 -->
         <Border Grid.Row="1" Style="{StaticResource ToolbarBorderStyle}">
-            <Grid ColumnSpacing="12">
+            <Grid ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -38,7 +38,7 @@
                 </Grid.ColumnDefinitions>
 
                 <AutoSuggestBox x:Name="RuleSearchBox"
-                                Width="260"
+                                Width="220"
                                 VerticalAlignment="Center"
                                 PlaceholderText="{x:Bind Loc.SearchPlaceholder, Mode=OneWay}"
                                 QueryIcon="Find"

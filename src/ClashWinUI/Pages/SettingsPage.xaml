@@ -7,788 +7,783 @@
 
     <ScrollViewer x:Name="SettingsScrollViewer" Padding="{StaticResource PageMarginCompact}"
                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Spacing="16" MaxWidth="760" HorizontalAlignment="Center" VerticalAlignment="Top">
+        <StackPanel Spacing="16" VerticalAlignment="Top">
 
             <!-- 页面标题 -->
             <TextBlock Text="{x:Bind Loc.Settings, Mode=OneWay}"
                        Style="{StaticResource PageTitleTextBlockStyle}" />
 
-            <!-- 按 mihomo 官方配置段分组的页签 -->
+            <!-- 按主题分组：外观 / 网络 / 系统 / 关于 -->
             <Border Style="{StaticResource SubtleCardBorderStyle}" Padding="6">
                 <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-                    <Button x:Name="TabGeneralButton" Tag="General"  Content="{x:Bind Loc.TabGeneral, Mode=OneWay}"  Click="SettingsTab_Click" />
-                    <Button x:Name="TabPortsButton"   Tag="Ports"    Content="{x:Bind Loc.TabPorts, Mode=OneWay}"    Click="SettingsTab_Click" />
-                    <Button x:Name="TabNetworkButton" Tag="Network"  Content="{x:Bind Loc.TabNetwork, Mode=OneWay}"  Click="SettingsTab_Click" />
-                    <Button x:Name="TabSystemButton"  Tag="System"   Content="{x:Bind Loc.TabSystem, Mode=OneWay}"   Click="SettingsTab_Click" />
-                    <Button x:Name="TabAdvancedButton" Tag="Advanced" Content="{x:Bind Loc.TabAdvanced, Mode=OneWay}" Click="SettingsTab_Click" />
+                    <Button x:Name="TabAppearanceButton" Tag="Appearance" Content="{x:Bind Loc.TabAppearance, Mode=OneWay}" Click="SettingsTab_Click" />
+                    <Button x:Name="TabNetworkButton"    Tag="Network"    Content="{x:Bind Loc.TabNetwork, Mode=OneWay}"    Click="SettingsTab_Click" />
+                    <Button x:Name="TabSystemButton"     Tag="System"     Content="{x:Bind Loc.TabSystem, Mode=OneWay}"     Click="SettingsTab_Click" />
+                    <Button x:Name="TabAboutButton"      Tag="About"      Content="{x:Bind Loc.TabAbout, Mode=OneWay}"      Click="SettingsTab_Click" />
                 </StackPanel>
             </Border>
             <TextBlock x:Name="TabHintText" Text="{x:Bind Loc.TabHint, Mode=OneWay}"
                        Style="{StaticResource SecondaryCaptionTextBlockStyle}"
                        Foreground="{ThemeResource TextTertiaryBrush}" />
 
-            <!-- ===== 页签：常规 / general · tun ===== -->
-            <Grid x:Name="TabGeneral" Visibility="Visible">
+            <Grid x:Name="TabAppearance" Visibility="Visible">
                 <StackPanel Spacing="16">
-            <!-- 常规设置 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.General, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyTun, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.StartWithWindows, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="StartWithWindows"
-                                          Toggled="StartWithWindows_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.SystemProxy, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="SystemProxyToggle"
-                                          Toggled="SystemProxyToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.TunMode, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="TunModeToggle"
-                                          Toggled="TunModeToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <TextBlock Text="{x:Bind Loc.TunModeHint, Mode=OneWay}"
-                                   Margin="0,-4,0,4"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.CoreStatus, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <Button Grid.Column="1"
-                                    x:Name="CoreSwitchButton"
-                                    Click="CoreSwitchButton_Click" />
-                        </Grid>
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.Appearance, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.Theme, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                                    <RadioButton x:Name="ClassicTheme"
+                                                 GroupName="Theme"
+                                                 Content="{x:Bind Loc.Classic, Mode=OneWay}"
+                                                 Checked="ClassicTheme_Click" />
+                                    <RadioButton x:Name="ModernTheme"
+                                                 GroupName="Theme"
+                                                 Content="{x:Bind Loc.Modern, Mode=OneWay}"
+                                                 Checked="ModernTheme_Click" />
+                                    <RadioButton x:Name="DarkTheme"
+                                                 GroupName="Theme"
+                                                 Content="{x:Bind Loc.Dark, Mode=OneWay}"
+                                                 Checked="DarkTheme_Click" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.Language, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                                    <RadioButton x:Name="EnglishLanguage"
+                                                 GroupName="Language"
+                                                 Content="{x:Bind Loc.English, Mode=OneWay}"
+                                                 Checked="EnglishLanguage_Click" />
+                                    <RadioButton x:Name="ChineseLanguage"
+                                                 GroupName="Language"
+                                                 Content="{x:Bind Loc.Chinese, Mode=OneWay}"
+                                                 Checked="ChineseLanguage_Click" />
+                                    <RadioButton x:Name="JapaneseLanguage"
+                                                 GroupName="Language"
+                                                 Content="{x:Bind Loc.Japanese, Mode=OneWay}"
+                                                 Checked="JapaneseLanguage_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- 外观设置 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.Appearance, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.Theme, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
-                                <RadioButton x:Name="ClassicTheme"
-                                             GroupName="Theme"
-                                             Content="{x:Bind Loc.Classic, Mode=OneWay}"
-                                             Checked="ClassicTheme_Click" />
-                                <RadioButton x:Name="ModernTheme"
-                                             GroupName="Theme"
-                                             Content="{x:Bind Loc.Modern, Mode=OneWay}"
-                                             Checked="ModernTheme_Click" />
-                                <RadioButton x:Name="DarkTheme"
-                                             GroupName="Theme"
-                                             Content="{x:Bind Loc.Dark, Mode=OneWay}"
-                                             Checked="DarkTheme_Click" />
-                            </StackPanel>
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.Language, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
-                                <RadioButton x:Name="EnglishLanguage"
-                                             GroupName="Language"
-                                             Content="{x:Bind Loc.English, Mode=OneWay}"
-                                             Checked="EnglishLanguage_Click" />
-                                <RadioButton x:Name="ChineseLanguage"
-                                             GroupName="Language"
-                                             Content="{x:Bind Loc.Chinese, Mode=OneWay}"
-                                             Checked="ChineseLanguage_Click" />
-                                <RadioButton x:Name="JapaneseLanguage"
-                                             GroupName="Language"
-                                             Content="{x:Bind Loc.Japanese, Mode=OneWay}"
-                                             Checked="JapaneseLanguage_Click" />
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
+                </Border>
                 </StackPanel>
             </Grid>
 
-            <!-- ===== 页签：端口 / ports ===== -->
-            <Grid x:Name="TabPorts" Visibility="Collapsed">
-                <StackPanel Spacing="16">
-            <!-- 端口设置 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.Ports, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyPorts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.ControllerPort, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <Button Grid.Column="1"
-                                    x:Name="ControllerPortButton"
-                                    Click="ControllerPort_Click" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.MixedPort, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <Button Grid.Column="1"
-                                    x:Name="MixedPortButton"
-                                    Click="MixedPort_Click" />
-                        </Grid>
-                        <TextBlock Text="{x:Bind Loc.PortsHint, Mode=OneWay}"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LogLevel, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ComboBox Grid.Column="1"
-                                      x:Name="LogLevelBox"
-                                      MinWidth="120"
-                                      SelectionChanged="LogLevelBox_SelectionChanged">
-                                <ComboBoxItem Content="silent" Tag="silent" />
-                                <ComboBoxItem Content="error" Tag="error" />
-                                <ComboBoxItem Content="warning" Tag="warning" />
-                                <ComboBoxItem Content="info" Tag="info" />
-                                <ComboBoxItem Content="debug" Tag="debug" />
-                            </ComboBox>
-                        </Grid>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-                </StackPanel>
-            </Grid>
-
-            <!-- ===== 页签：网络 / sniffer · dns ===== -->
             <Grid x:Name="TabNetwork" Visibility="Collapsed">
                 <StackPanel Spacing="16">
-            <!-- 网络增强 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.NetworkBoost, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeySniffer, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.Sniffer, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="SnifferToggle"
-                                          Toggled="SnifferToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.TcpConcurrent, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="TcpConcurrentToggle"
-                                          Toggled="TcpConcurrentToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.UnifiedDelay, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="UnifiedDelayToggle"
-                                          Toggled="UnifiedDelayToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.FindProcessMode, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="FindProcessModeToggle"
-                                          Toggled="FindProcessModeToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.StoreSelected, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="StoreSelectedToggle"
-                                          Toggled="StoreSelectedToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.StoreFakeIp, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="StoreFakeIpToggle"
-                                          Toggled="StoreFakeIpToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.GeoAutoUpdate, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="GeoAutoUpdateToggle"
-                                          Toggled="GeoAutoUpdateToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.GeoUpdateInterval, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ComboBox Grid.Column="1"
-                                      x:Name="GeoIntervalBox"
-                                      MinWidth="120"
-                                      SelectionChanged="GeoIntervalBox_SelectionChanged">
-                                    <ComboBoxItem Content="6" Tag="6" />
-                                    <ComboBoxItem Content="12" Tag="12" />
-                                    <ComboBoxItem Content="24" Tag="24" />
-                                    <ComboBoxItem Content="72" Tag="72" />
-                                    <ComboBoxItem Content="168" Tag="168" />
-                            </ComboBox>
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.Mode, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ComboBox Grid.Column="1"
-                                      x:Name="ModeBox"
-                                      MinWidth="120"
-                                      SelectionChanged="ModeBox_SelectionChanged">
-                                    <ComboBoxItem Content="{x:Bind Loc.Rule, Mode=OneWay}" Tag="rule" />
-                                    <ComboBoxItem Content="{x:Bind Loc.Global, Mode=OneWay}" Tag="global" />
-                                    <ComboBoxItem Content="{x:Bind Loc.Direct, Mode=OneWay}" Tag="direct" />
-                            </ComboBox>
-                        </Grid>
-                        <TextBlock Text="{x:Bind Loc.NetworkBoostHint, Mode=OneWay}"
-                                   Margin="0,4,0,0"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.Ports, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                            <TextBlock Text="{x:Bind Loc.OfficialKeyPorts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.ControllerPort, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <Button Grid.Column="1"
+                                        x:Name="ControllerPortButton"
+                                        Click="ControllerPort_Click" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.MixedPort, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <Button Grid.Column="1"
+                                        x:Name="MixedPortButton"
+                                        Click="MixedPort_Click" />
+                            </Grid>
+                            <TextBlock Text="{x:Bind Loc.PortsHint, Mode=OneWay}"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LogLevel, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ComboBox Grid.Column="1"
+                                          x:Name="LogLevelBox"
+                                          MinWidth="120"
+                                          SelectionChanged="LogLevelBox_SelectionChanged">
+                                    <ComboBoxItem Content="silent" Tag="silent" />
+                                    <ComboBoxItem Content="error" Tag="error" />
+                                    <ComboBoxItem Content="warning" Tag="warning" />
+                                    <ComboBoxItem Content="info" Tag="info" />
+                                    <ComboBoxItem Content="debug" Tag="debug" />
+                                </ComboBox>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- DNS 高级：默认收起，避免 5 个多行输入框把设置页拉得过长 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Grid Background="{ThemeResource SurfaceSubtleBrush}"
-                          Padding="{StaticResource CardPadding}"
-                          CornerRadius="{StaticResource ControlCornerRadius}"
-                          ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Loc.DnsAdvanced, Mode=OneWay}"
-                                   VerticalAlignment="Center"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                        <Button Grid.Column="1"
-                                x:Name="DnsToggleButton"
-                                Content="{x:Bind Loc.Expand, Mode=OneWay}"
-                                Click="DnsToggleButton_Click" />
-                    </Grid>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyDns, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel x:Name="DnsAdvancedPanel"
-                                Margin="12,12,12,12"
-                                Spacing="8"
-                                Visibility="Collapsed">
-                        <Grid ColumnSpacing="12">
+                </Border>
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.NetworkBoost, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                            <TextBlock Text="{x:Bind Loc.OfficialKeySniffer, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.Sniffer, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="SnifferToggle"
+                                              Toggled="SnifferToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.TcpConcurrent, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="TcpConcurrentToggle"
+                                              Toggled="TcpConcurrentToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.UnifiedDelay, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="UnifiedDelayToggle"
+                                              Toggled="UnifiedDelayToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.FindProcessMode, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="FindProcessModeToggle"
+                                              Toggled="FindProcessModeToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.StoreSelected, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="StoreSelectedToggle"
+                                              Toggled="StoreSelectedToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.StoreFakeIp, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="StoreFakeIpToggle"
+                                              Toggled="StoreFakeIpToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.GeoAutoUpdate, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="GeoAutoUpdateToggle"
+                                              Toggled="GeoAutoUpdateToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.GeoUpdateInterval, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ComboBox Grid.Column="1"
+                                          x:Name="GeoIntervalBox"
+                                          MinWidth="120"
+                                          SelectionChanged="GeoIntervalBox_SelectionChanged">
+                                        <ComboBoxItem Content="6" Tag="6" />
+                                        <ComboBoxItem Content="12" Tag="12" />
+                                        <ComboBoxItem Content="24" Tag="24" />
+                                        <ComboBoxItem Content="72" Tag="72" />
+                                        <ComboBoxItem Content="168" Tag="168" />
+                                </ComboBox>
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.Mode, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ComboBox Grid.Column="1"
+                                          x:Name="ModeBox"
+                                          MinWidth="120"
+                                          SelectionChanged="ModeBox_SelectionChanged">
+                                        <ComboBoxItem Content="{x:Bind Loc.Rule, Mode=OneWay}" Tag="rule" />
+                                        <ComboBoxItem Content="{x:Bind Loc.Global, Mode=OneWay}" Tag="global" />
+                                        <ComboBoxItem Content="{x:Bind Loc.Direct, Mode=OneWay}" Tag="direct" />
+                                </ComboBox>
+                            </Grid>
+                            <TextBlock Text="{x:Bind Loc.NetworkBoostHint, Mode=OneWay}"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Grid Background="{ThemeResource SurfaceSubtleBrush}"
+                              Padding="{StaticResource CardPadding}"
+                              CornerRadius="{StaticResource ControlCornerRadius}"
+                              ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.DnsEnhancedMode, Mode=OneWay}"
+                            <TextBlock Text="{x:Bind Loc.DnsAdvanced, Mode=OneWay}"
                                        VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ComboBox Grid.Column="1"
-                                      x:Name="EnhancedModeBox"
-                                      MinWidth="160"
-                                      SelectionChanged="EnhancedModeBox_SelectionChanged">
-                                <ComboBoxItem Content="{x:Bind Loc.DnsKeep, Mode=OneWay}" Tag="keep" />
-                                <ComboBoxItem Content="fake-ip" Tag="fake-ip" />
-                                <ComboBoxItem Content="redir-host" Tag="redir-host" />
-                            </ComboBox>
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                            <Button Grid.Column="1"
+                                    x:Name="DnsToggleButton"
+                                    Content="{x:Bind Loc.Expand, Mode=OneWay}"
+                                    Click="DnsToggleButton_Click" />
                         </Grid>
-                        <TextBlock Text="{x:Bind Loc.DnsNameserver, Mode=OneWay}"
-                                   Margin="0,4,0,0"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="DnsNameserverBox"
-                                 Tag="dns-nameserver"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="44"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="https://doh.pub/dns-query"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.DnsDefaultNameserver, Mode=OneWay}"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="DnsDefaultServerBox"
-                                 Tag="dns-default"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="44"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="223.5.5.5"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.DnsFallback, Mode=OneWay}"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="DnsFallbackBox"
-                                 Tag="dns-fallback"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="44"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="https://dns.alidns.com/dns-query"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.DnsPolicy, Mode=OneWay}"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="DnsPolicyBox"
-                                 Tag="dns-policy"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="44"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="geosite:cn https://doh.pub/dns-query"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.DnsFakeIpFilter, Mode=OneWay}"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="DnsFilterBox"
-                                 Tag="dns-filter"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="44"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="+.lan"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.DnsHint, Mode=OneWay}"
-                                   Margin="0,4,0,0"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
+                            <TextBlock Text="{x:Bind Loc.OfficialKeyDns, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel x:Name="DnsAdvancedPanel"
+                                    Margin="12,12,12,12"
+                                    Spacing="8"
+                                    Visibility="Collapsed">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.DnsEnhancedMode, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ComboBox Grid.Column="1"
+                                          x:Name="EnhancedModeBox"
+                                          MinWidth="160"
+                                          SelectionChanged="EnhancedModeBox_SelectionChanged">
+                                    <ComboBoxItem Content="{x:Bind Loc.DnsKeep, Mode=OneWay}" Tag="keep" />
+                                    <ComboBoxItem Content="fake-ip" Tag="fake-ip" />
+                                    <ComboBoxItem Content="redir-host" Tag="redir-host" />
+                                </ComboBox>
+                            </Grid>
+                            <TextBlock Text="{x:Bind Loc.DnsNameserver, Mode=OneWay}"
+                                       Margin="0,4,0,0"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="DnsNameserverBox"
+                                     Tag="dns-nameserver"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="44"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="https://doh.pub/dns-query"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.DnsDefaultNameserver, Mode=OneWay}"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="DnsDefaultServerBox"
+                                     Tag="dns-default"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="44"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="223.5.5.5"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.DnsFallback, Mode=OneWay}"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="DnsFallbackBox"
+                                     Tag="dns-fallback"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="44"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="https://dns.alidns.com/dns-query"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.DnsPolicy, Mode=OneWay}"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="DnsPolicyBox"
+                                     Tag="dns-policy"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="44"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="geosite:cn https://doh.pub/dns-query"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.DnsFakeIpFilter, Mode=OneWay}"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="DnsFilterBox"
+                                     Tag="dns-filter"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="44"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="+.lan"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.DnsHint, Mode=OneWay}"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-
+                </Border>
                 </StackPanel>
             </Grid>
 
-            <!-- ===== 页签：系统 / allow-lan · hosts · tunnels ===== -->
             <Grid x:Name="TabSystem" Visibility="Collapsed">
                 <StackPanel Spacing="16">
-            <!-- 局域网访问控制 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.LanAccess, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyLan, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LanAuth, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="LanAuthToggle"
-                                          Toggled="LanAuthToggle_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LanAuthUser, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <TextBox Grid.Column="1"
-                                     x:Name="LanUserBox"
-                                     MinWidth="200"
-                                     Tag="lan-user"
-                                     LostFocus="TextOption_LostFocus" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LanAuthPassword, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <PasswordBox Grid.Column="1"
-                                         x:Name="LanPassBox"
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.General, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                            <TextBlock Text="{x:Bind Loc.OfficialKeyTun, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.StartWithWindows, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="StartWithWindows"
+                                              Toggled="StartWithWindows_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.SystemProxy, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="SystemProxyToggle"
+                                              Toggled="SystemProxyToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind Loc.TunMode, Mode=OneWay}"
+                                               Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                    <Border Background="{ThemeResource StatusWarningSubtleBrush}"
+                                            BorderBrush="{ThemeResource StatusWarningBrush}"
+                                            BorderThickness="1"
+                                            Style="{StaticResource SemanticTagBorderStyle}">
+                                        <TextBlock Text="{x:Bind Loc.RestartRequired, Mode=OneWay}"
+                                                   Style="{StaticResource SemanticTagTextStyle}"
+                                                   Foreground="{ThemeResource StatusWarningBrush}" />
+                                    </Border>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="TunModeToggle"
+                                              Toggled="TunModeToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <TextBlock Text="{x:Bind Loc.TunModeHint, Mode=OneWay}"
+                                       Margin="0,-4,0,4"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.CoreStatus, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <Button Grid.Column="1"
+                                        x:Name="CoreSwitchButton"
+                                        Click="CoreSwitchButton_Click" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.LanAccess, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                            <TextBlock Text="{x:Bind Loc.OfficialKeyLan, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LanAuth, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="LanAuthToggle"
+                                              Toggled="LanAuthToggle_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LanAuthUser, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <TextBox Grid.Column="1"
+                                         x:Name="LanUserBox"
                                          MinWidth="200"
-                                         Tag="lan-pass"
+                                         Tag="lan-user"
                                          LostFocus="TextOption_LostFocus" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LanSkipAuth, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <TextBox Grid.Column="1"
-                                     x:Name="LanSkipBox"
-                                     MinWidth="200"
-                                     Tag="lan-skip"
-                                     PlaceholderText="127.0.0.1/32"
-                                     LostFocus="TextOption_LostFocus" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LanAllowedIps, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <TextBox Grid.Column="1"
-                                     x:Name="LanAllowBox"
-                                     MinWidth="200"
-                                     Tag="lan-allow"
-                                     PlaceholderText="192.168.1.0/24"
-                                     LostFocus="TextOption_LostFocus" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.LanDisallowedIps, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <TextBox Grid.Column="1"
-                                     x:Name="LanDenyBox"
-                                     MinWidth="200"
-                                     Tag="lan-deny"
-                                     PlaceholderText="192.168.1.50/32"
-                                     LostFocus="TextOption_LostFocus" />
-                        </Grid>
-                        <TextBlock Text="{x:Bind Loc.LanAuthHint, Mode=OneWay}"
-                                   Margin="0,4,0,0"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LanAuthPassword, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <PasswordBox Grid.Column="1"
+                                             x:Name="LanPassBox"
+                                             MinWidth="200"
+                                             Tag="lan-pass"
+                                             LostFocus="TextOption_LostFocus" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LanSkipAuth, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <TextBox Grid.Column="1"
+                                         x:Name="LanSkipBox"
+                                         MinWidth="200"
+                                         Tag="lan-skip"
+                                         PlaceholderText="127.0.0.1/32"
+                                         LostFocus="TextOption_LostFocus" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LanAllowedIps, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <TextBox Grid.Column="1"
+                                         x:Name="LanAllowBox"
+                                         MinWidth="200"
+                                         Tag="lan-allow"
+                                         PlaceholderText="192.168.1.0/24"
+                                         LostFocus="TextOption_LostFocus" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.LanDisallowedIps, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <TextBox Grid.Column="1"
+                                         x:Name="LanDenyBox"
+                                         MinWidth="200"
+                                         Tag="lan-deny"
+                                         PlaceholderText="192.168.1.50/32"
+                                         LostFocus="TextOption_LostFocus" />
+                            </Grid>
+                            <TextBlock Text="{x:Bind Loc.LanAuthHint, Mode=OneWay}"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- 域名映射与端口转发 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.MappingForward, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyHosts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <TextBlock Text="{x:Bind Loc.CustomHosts, Mode=OneWay}"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="HostsBox"
-                                 Tag="hosts"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="88"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="example.com 1.2.3.4"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.HostsHint, Mode=OneWay}"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
-                        <TextBlock Text="{x:Bind Loc.CustomTunnels, Mode=OneWay}"
-                                   Margin="0,8,0,0"
-                                   Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        <TextBox x:Name="TunnelsBox"
-                                 Tag="tunnels"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="72"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="tcp,127.0.0.1:6553,127.0.0.1:80"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.TunnelsHint, Mode=OneWay}"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
+                </Border>
+                <!-- 局域网与 IPv6 -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.LanAndIpv6, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.AllowLAN, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="AllowLANToggle"
+                                              Toggled="AllowLAN_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.IPV6, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <ToggleSwitch Grid.Column="1"
+                                              x:Name="IPV6Toggle"
+                                              Toggled="IPV6_Toggled"
+                                              OnContent="{x:Bind Loc.On, Mode=OneWay}"
+                                              OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
+                </Border>
 
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.MappingForward, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                            <TextBlock Text="{x:Bind Loc.OfficialKeyHosts, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <TextBlock Text="{x:Bind Loc.CustomHosts, Mode=OneWay}"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="HostsBox"
+                                     Tag="hosts"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="88"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="example.com 1.2.3.4"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.HostsHint, Mode=OneWay}"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                            <TextBlock Text="{x:Bind Loc.CustomTunnels, Mode=OneWay}"
+                                       Margin="0,8,0,0"
+                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            <TextBox x:Name="TunnelsBox"
+                                     Tag="tunnels"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="72"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="tcp,127.0.0.1:6553,127.0.0.1:80"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.TunnelsHint, Mode=OneWay}"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.CustomSnippet, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                            <TextBlock Text="{x:Bind Loc.OfficialKeyCustom, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <TextBox x:Name="SnippetBox"
+                                     Tag="snippet"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     Height="140"
+                                     FontFamily="Consolas"
+                                     PlaceholderText="listeners:"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     LostFocus="TextOption_LostFocus" />
+                            <TextBlock Text="{x:Bind Loc.SnippetHint, Mode=OneWay}"
+                                       TextWrapping="Wrap"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
                 </StackPanel>
             </Grid>
 
-            <!-- ===== 页签：高级 / custom ===== -->
-            <Grid x:Name="TabAdvanced" Visibility="Collapsed">
+            <Grid x:Name="TabAbout" Visibility="Collapsed">
                 <StackPanel Spacing="16">
-            <!-- 自定义配置片段 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.CustomSnippet, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                        <TextBlock Text="{x:Bind Loc.OfficialKeyCustom, Mode=OneWay}" TextWrapping="Wrap" Margin="12,8,12,0" Style="{StaticResource SecondaryCaptionTextBlockStyle}" Foreground="{ThemeResource TextTertiaryBrush}" />
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <TextBox x:Name="SnippetBox"
-                                 Tag="snippet"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 Height="140"
-                                 FontFamily="Consolas"
-                                 PlaceholderText="listeners:"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 LostFocus="TextOption_LostFocus" />
-                        <TextBlock Text="{x:Bind Loc.SnippetHint, Mode=OneWay}"
-                                   TextWrapping="Wrap"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextSecondaryBrush}" />
+                <!-- 关于与维护 -->
+                <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
+                    <StackPanel Spacing="0">
+                        <Border Background="{ThemeResource SurfaceSubtleBrush}"
+                                Padding="{StaticResource CardPadding}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                            <TextBlock Text="{x:Bind Loc.AboutMaintenance, Mode=OneWay}"
+                                       Style="{StaticResource SectionHeaderTextBlockStyle}" />
+                        </Border>
+                        <StackPanel Margin="12,12,12,12" Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.UWPLoopback, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <Button Grid.Column="1"
+                                        Content="{x:Bind Loc.Enable, Mode=OneWay}"
+                                        Click="UWPLoopback_Click" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.CheckMMDBUpdate, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <Button Grid.Column="1"
+                                        x:Name="CheckMMDBUpdateButton"
+                                        Content="{x:Bind Loc.Update, Mode=OneWay}"
+                                        Click="CheckMMDBUpdate_Click" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.ResetAllSettings, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <Button Grid.Column="1"
+                                        Content="{x:Bind Loc.Reset, Mode=OneWay}"
+                                        Click="ResetAllSettings_Click" />
+                            </Grid>
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Loc.Version, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                                <TextBlock Grid.Column="1"
+                                           x:Name="VersionText"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Border>
+                </Border>
 
-            <!-- 高级设置 -->
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8">
-                <StackPanel Spacing="0">
-                    <Border Background="{ThemeResource SurfaceSubtleBrush}"
-                            Padding="{StaticResource CardPadding}"
-                            CornerRadius="{StaticResource ControlCornerRadius}">
-                        <TextBlock Text="{x:Bind Loc.Advanced, Mode=OneWay}"
-                                   Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                    </Border>
-                    <StackPanel Margin="12,12,12,12" Spacing="8">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.AllowLAN, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="AllowLANToggle"
-                                          Toggled="AllowLAN_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.IPV6, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <ToggleSwitch Grid.Column="1"
-                                          x:Name="IPV6Toggle"
-                                          Toggled="IPV6_Toggled"
-                                          OnContent="{x:Bind Loc.On, Mode=OneWay}"
-                                          OffContent="{x:Bind Loc.Off, Mode=OneWay}" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.UWPLoopback, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <Button Grid.Column="1"
-                                    Content="{x:Bind Loc.Enable, Mode=OneWay}"
-                                    Click="UWPLoopback_Click" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.CheckMMDBUpdate, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <Button Grid.Column="1"
-                                    x:Name="CheckMMDBUpdateButton"
-                                    Content="{x:Bind Loc.Update, Mode=OneWay}"
-                                    Click="CheckMMDBUpdate_Click" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.ResetAllSettings, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <Button Grid.Column="1"
-                                    Content="{x:Bind Loc.Reset, Mode=OneWay}"
-                                    Click="ResetAllSettings_Click" />
-                        </Grid>
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Loc.Version, Mode=OneWay}"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                            <TextBlock Grid.Column="1"
-                                       x:Name="VersionText"
-                                       VerticalAlignment="Center"
-                                       Style="{StaticResource ColumnCellTextBlockStyle}" />
-                        </Grid>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
-                <Button x:Name="UpdateButton"
-                        Content="{x:Bind Loc.Update, Mode=OneWay}"
-                        Visibility="Collapsed"
-                        Click="UpdateButton_Click" />
-            </StackPanel>
+                    <!-- 有新版本时才显示（其余时间 Collapsed） -->
+                    <Button x:Name="UpdateButton"
+                            Content="{x:Bind Loc.Update, Mode=OneWay}"
+                            Visibility="Collapsed"
+                            Click="UpdateButton_Click" />
                 </StackPanel>
             </Grid>
         </StackPanel>

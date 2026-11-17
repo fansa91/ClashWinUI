@@ -7,7 +7,7 @@
       Loaded="SupportPage_Loaded">
 
     <ScrollViewer Padding="{StaticResource PageMarginCompact}">
-        <StackPanel Spacing="20" MaxWidth="900" HorizontalAlignment="Center">
+        <StackPanel Spacing="16">
 
             <!-- 页面标题 -->
             <StackPanel Spacing="2">
@@ -77,26 +77,52 @@
                 </StackPanel>
             </Border>
 
-            <!-- 快捷入口 -->
+            <!-- 快捷入口：与设置页的行式卡片同一套观感 -->
             <StackPanel Spacing="8">
                 <TextBlock Text="{x:Bind Loc.QuickLinks, Mode=OneWay}"
                            Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"
-                            Content="{x:Bind Loc.OpenConfigDir, Mode=OneWay}"
-                            Click="OpenConfigDir_Click"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left" />
-                    <Button Grid.Column="1"
-                            Content="{x:Bind Loc.ViewLogs, Mode=OneWay}"
-                            Click="ViewLogs_Click"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left" />
-                </Grid>
+                <Border Style="{StaticResource CardBorderStyle}" Padding="8">
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Click="OpenConfigDir_Click"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                MinHeight="40"
+                                BorderThickness="0"
+                                Background="Transparent">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <FontIcon Glyph="&#xE8B7;"
+                                          FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                          FontSize="16"
+                                          Foreground="{ThemeResource BrandPrimaryBrush}" />
+                                <TextBlock Text="{x:Bind Loc.OpenConfigDir, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Column="1"
+                                Click="ViewLogs_Click"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                MinHeight="40"
+                                BorderThickness="0"
+                                Background="Transparent">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <FontIcon Glyph="&#xE8BD;"
+                                          FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                          FontSize="16"
+                                          Foreground="{ThemeResource BrandPrimaryBrush}" />
+                                <TextBlock Text="{x:Bind Loc.ViewLogs, Mode=OneWay}"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource ColumnCellTextBlockStyle}" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
             </StackPanel>
 
             <!-- 帮助链接卡片 -->
@@ -225,9 +251,9 @@
             <StackPanel x:Name="AdvertisementPanel" Spacing="8" Visibility="Collapsed">
                 <TextBlock Text="{x:Bind Loc.Advertisement, Mode=OneWay}"
                            Style="{StaticResource SectionHeaderTextBlockStyle}" />
-                <Image x:Name="MajorAdvertisement" Width="690" Height="165" Stretch="Fill"
+                <Image x:Name="MajorAdvertisement" MaxWidth="690" MaxHeight="165" Stretch="Uniform"
                        HorizontalAlignment="Left" Tapped="Advertisement_Tapped" Visibility="Collapsed" />
-                <Image x:Name="MinorAdvertisement" Width="690" Height="165" Stretch="Fill"
+                <Image x:Name="MinorAdvertisement" MaxWidth="690" MaxHeight="165" Stretch="Uniform"
                        HorizontalAlignment="Left" Tapped="Advertisement_Tapped" Visibility="Collapsed" />
             </StackPanel>
         </StackPanel>

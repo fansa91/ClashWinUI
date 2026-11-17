@@ -72,6 +72,42 @@ namespace ClashDotNetFramework.Pages
             UpdateTargetState();
         }
 
+        /// <summary>卡片上的按钮通过 DataContext 拿到自己那一行，不依赖列表选中项。</summary>
+        private static ProfileItem ItemOf(object sender)
+            => (sender as FrameworkElement)?.DataContext as ProfileItem;
+
+        private async void CardActivate_Click(object sender, RoutedEventArgs e)
+        {
+            var profile = ItemOf(sender);
+            if (profile == null || profile.IsSelected)
+                return;
+            await SetAsDefaultProfile(profile);
+            ProfileItemListView.SelectedItem = profile;
+            UpdateTargetState();
+        }
+
+        private async void CardUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            var profile = ItemOf(sender);
+            if (profile == null)
+                return;
+
+            if (sender is Button button)
+                button.IsEnabled = false;
+            try
+            {
+                await Task.Run(() => profile.Update());
+            }
+            finally
+            {
+                if (sender is Button same)
+                    same.IsEnabled = true;
+            }
+
+            Configuration.Save();
+            UpdateTargetState();
+        }
+
         private void ProfileGrid_DragOver(object sender, DragEventArgs e)
         {
             e.AcceptedOperation = DataPackageOperation.Copy;

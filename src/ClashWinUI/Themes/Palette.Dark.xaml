@@ -56,4 +56,45 @@
     <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#D9F0EB" />
 
+    <!--
+        控件模板里的强调色走 ThemeResource 查找，会被 XamlControlsResources 自带的
+        ThemeDictionaries 抢先命中；只有把同样的键放进主题字典里才能真正覆盖，
+        否则开关、主按钮会停留在系统强调色（蓝），与页面强调色割裂。
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <Color x:Key="SystemAccentColor">#0E7C6B</Color>
+            <Color x:Key="SystemAccentColorLight1">#0E8C79</Color>
+            <Color x:Key="SystemAccentColorLight2">#12A08A</Color>
+            <Color x:Key="SystemAccentColorLight3">#17B49C</Color>
+            <Color x:Key="SystemAccentColorDark1">#0A6255</Color>
+            <Color x:Key="SystemAccentColorDark2">#084D43</Color>
+            <Color x:Key="SystemAccentColorDark3">#053A32</Color>
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#0E7C6B" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#0E7C6B" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#E1F3EF" />
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#0A6255" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#0E7C6B" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#0A6255" />
+            <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#E1F3EF" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <Color x:Key="SystemAccentColor">#2E8F82</Color>
+            <Color x:Key="SystemAccentColorLight1">#3AA294</Color>
+            <Color x:Key="SystemAccentColorLight2">#48B5A6</Color>
+            <Color x:Key="SystemAccentColorLight3">#5BC7B8</Color>
+            <Color x:Key="SystemAccentColorDark1">#237366</Color>
+            <Color x:Key="SystemAccentColorDark2">#1B5A50</Color>
+            <Color x:Key="SystemAccentColorDark3">#12423B</Color>
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#2E8F82" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#2E8F82" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#1B3A36" />
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#1B3A36" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#2E8F82" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#1B3A36" />
+            <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#1B3A36" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

@@ -13,15 +13,20 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- 页面标题 + 日志条数 -->
+        <!-- 页面标题 + 代理模式 + 日志条数 -->
         <Grid ColumnSpacing="12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Text="{x:Bind Loc.Logs, Mode=OneWay}"
                        Style="{StaticResource PageTitleTextBlockStyle}" />
-            <Border Grid.Column="1" Style="{StaticResource CountBadgeStyle}">
+            <TextBlock x:Name="CurrentMode"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+            <Border Grid.Column="2" Style="{StaticResource CountBadgeStyle}">
                 <TextBlock x:Name="LogCountText"
                            Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
             </Border>
@@ -29,12 +34,11 @@
 
         <!-- 顶部固定工具栏 -->
         <Border Grid.Row="1" Style="{StaticResource ToolbarBorderStyle}">
-            <Grid ColumnSpacing="12">
+            <Grid ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
@@ -87,11 +91,6 @@
                             Visibility="Collapsed" />
                 </StackPanel>
 
-                <TextBlock x:Name="CurrentMode"
-                           Grid.Column="5"
-                           Margin="4,0,0,0"
-                           VerticalAlignment="Center"
-                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
             </Grid>
         </Border>
 

@@ -188,6 +188,25 @@
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
+    <!-- 卡片式列表项（策略组、订阅卡）：列表项本身就是一张小卡片 -->
+    <Style x:Key="CardListItemContainerStyle" TargetType="ListViewItem">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+
+    <!-- 卡片描边：背景透明，让列表项的悬停 / 选中底色透出来 -->
+    <Style x:Key="CardOutlineStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{ThemeResource SurfaceCardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+        <Setter Property="Padding" Value="{StaticResource CardPadding}" />
+    </Style>
+
     <Style x:Key="VListItemContainerStyle" TargetType="ListViewItem">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="0" />

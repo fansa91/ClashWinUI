@@ -27,18 +27,19 @@
             </Border>
         </Grid>
 
-        <!-- 顶部固定工具栏 -->
+        <!-- 顶部固定工具栏：搜索 — 筛选 — 统计 — 操作，与规则 / 日志页同序 -->
         <Border Grid.Row="1" Style="{StaticResource ToolbarBorderStyle}">
-            <Grid ColumnSpacing="12">
+            <Grid ColumnSpacing="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <AutoSuggestBox x:Name="ConnectionSearchBox"
-                                Width="240"
+                                Width="220"
                                 VerticalAlignment="Center"
                                 PlaceholderText="{x:Bind Loc.SearchPlaceholder, Mode=OneWay}"
                                 QueryIcon="Find"
@@ -55,25 +56,27 @@
                     <ComboBoxItem Content="{x:Bind Loc.UDP, Mode=OneWay}" Tag="UDP" />
                 </ComboBox>
 
-                <StackPanel Grid.Column="2"
+                <!-- 累计流量 -->
+                <TextBlock x:Name="TotalTraffic"
+                           Grid.Column="3"
+                           Margin="0,0,4,0"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
+
+                <StackPanel Grid.Column="4"
                             Orientation="Horizontal"
                             Spacing="8"
                             HorizontalAlignment="Right">
+                    <Button x:Name="ClearFilterButton"
+                            Content="{x:Bind Loc.ClearFilter, Mode=OneWay}"
+                            Click="ClearFilterButton_Click"
+                            MinWidth="80"
+                            Visibility="Collapsed" />
                     <Button x:Name="CloseAllButton"
                             Content="{x:Bind Loc.CloseAll, Mode=OneWay}"
                             Click="CloseAllButton_Click"
                             MinWidth="80" />
-                    <Button x:Name="ClearFilterButton"
-                            Content="{x:Bind Loc.ClearFilter, Mode=OneWay}"
-                            Click="ClearFilterButton_Click"
-                            Visibility="Collapsed" />
                 </StackPanel>
-
-                <!-- 累计流量 -->
-                <TextBlock x:Name="TotalTraffic"
-                           Grid.Column="3"
-                           VerticalAlignment="Center"
-                           Style="{StaticResource SecondaryCaptionTextBlockStyle}" />
             </Grid>
         </Border>
 

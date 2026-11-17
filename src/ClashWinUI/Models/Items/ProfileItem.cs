@@ -167,6 +167,109 @@ namespace ClashDotNetFramework.Models.Items
 
         #endregion
 
+        #region 订阅流量信息
+
+        // 订阅服务商用 subscription-userinfo 响应头下发配额，单位为字节；
+        // 拿不到这个头的机场保持 0，界面据此隐藏流量块。
+
+        public long TrafficUpload { get; set; } = 0;
+
+        public long TrafficDownload { get; set; } = 0;
+
+        /// <summary>套餐总流量，0 表示不限量或未提供。</summary>
+        public long TrafficTotal { get; set; } = 0;
+
+        /// <summary>到期时间，null 表示未提供。</summary>
+        public DateTime? TrafficExpire { get; set; }
+
+        public long TrafficUsed => TrafficUpload + TrafficDownload;
+
+        public bool HasTraffic => TrafficTotal > 0 || TrafficUsed > 0;
+
+        /// <summary>已用 / 总量；总量为 0 时不显示分母。</summary>
+        public string TrafficUsedText => TrafficTotal > 0
+            ? string.Format(Utils.Localization.Instance.TrafficUsedFormat,
+                UnitConverter.FormatBytes(TrafficUsed), UnitConverter.FormatBytes(TrafficTotal))
+            : UnitConverter.FormatBytes(TrafficUsed);
+
+        public string TrafficRemainingText
+        {
+            get
+            {
+                if (TrafficTotal <= 0)
+                    return string.Empty;
+                long left = Math.Max(0, TrafficTotal - TrafficUsed);
+                return string.Format(Utils.Localization.Instance.TrafficRemainingFormat,
+                    UnitConverter.FormatBytes(left));
+            }
+        }
+
+        public double TrafficPercent => TrafficTotal <= 0
+            ? 0
+            : Math.Min(100, Math.Round(TrafficUsed * 100.0 / TrafficTotal, 1));
+
+        public bool HasTrafficExpire => TrafficExpire.HasValue;
+
+        public string TrafficExpireText => TrafficExpire.HasValue
+            ? string.Format(Utils.Localization.Instance.TrafficExpireFormat,
+                TrafficExpire.Value.ToString("yyyy-MM-dd"))
+            : string.Empty;
+
+        /// <summary>
+        /// 解析 subscription-userinfo 响应头，形如
+        /// <c>upload=1234; download=5678; total=102400; expire=1760000000</c>。
+        /// 头部缺失时保留上一次解析结果，避免订阅商偶发不带头导致数字被清零。
+        /// </summary>
+        public void ApplySubscriptionHeader(string header)
+        {
+            if (string.IsNullOrWhiteSpace(header))
+                return;
+
+            foreach (var part in header.Split(';'))
+            {
+                var pair = part.Split('=');
+                if (pair.Length != 2)
+                    continue;
+
+                string key = pair[0].Trim().ToLowerInvariant();
+                if (!long.TryParse(pair[1].Trim(), out long value))
+                    continue;
+
+                switch (key)
+                {
+                    case "upload":
+                        TrafficUpload = value;
+                        break;
+                    case "download":
+                        TrafficDownload = value;
+                        break;
+                    case "total":
+                        TrafficTotal = value;
+                        break;
+                    case "expire":
+                        // 0 表示长期有效，按"未提供"处理
+                        TrafficExpire = value > 0
+                            ? DateTimeOffset.FromUnixTimeSeconds(value).LocalDateTime
+                            : (DateTime?)null;
+                        break;
+                }
+            }
+
+            NotifyPropertyChanged(nameof(TrafficUpload));
+            NotifyPropertyChanged(nameof(TrafficDownload));
+            NotifyPropertyChanged(nameof(TrafficTotal));
+            NotifyPropertyChanged(nameof(TrafficExpire));
+            NotifyPropertyChanged(nameof(TrafficUsed));
+            NotifyPropertyChanged(nameof(HasTraffic));
+            NotifyPropertyChanged(nameof(TrafficUsedText));
+            NotifyPropertyChanged(nameof(TrafficRemainingText));
+            NotifyPropertyChanged(nameof(TrafficPercent));
+            NotifyPropertyChanged(nameof(HasTrafficExpire));
+            NotifyPropertyChanged(nameof(TrafficExpireText));
+        }
+
+        #endregion
+
         #region 内置方法
 
         /// <summary>
@@ -199,6 +302,8 @@ namespace ClashDotNetFramework.Models.Items
                         }
                         yamlText = result;
                         File.WriteAllText(FileName, yamlText);
+                        // 机场通常在这个响应头里下发已用 / 总量 / 到期时间
+                        ApplySubscriptionHeader(rep.Headers["subscription-userinfo"]);
                         SetProfileDetail(GetProfileDetail(yamlText));
                         LastUpdate = DateTime.Now;
                         return true;

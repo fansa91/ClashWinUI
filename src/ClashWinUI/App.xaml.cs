@@ -28,6 +28,7 @@ namespace ClashDotNetFramework
             // Loc 供 DataTemplate 内无法使用 x:Bind 的场景以 {Binding ... Source={StaticResource Loc}} 访问
             Resources["Loc"] = Localization.Instance;
             Resources["BoolToVisibility"] = new BoolToVisibilityConverter();
+            Resources["InverseBoolToVisibility"] = new InverseBoolToVisibilityConverter();
             Resources["InverseBool"] = new InverseBoolConverter();
             Resources["StringToVisibility"] = new StringToVisibilityConverter();
             Resources["LatencyToText"] = new LatencyToTextConverter();
@@ -91,6 +92,7 @@ namespace ClashDotNetFramework
             Global.iconController.Start();
             _garbageCollector.StartCollecting();
         }
+
 
         private void StartSingleInstance(LaunchActivatedEventArgs args)
         {

@@ -61,6 +61,16 @@ namespace ClashDotNetFramework.Models.Converters
             => value is bool b && !b;
     }
 
+    /// <summary>false → 可见：用于"已在生效中就不再显示激活按钮"这类取反场景。</summary>
+    public class InverseBoolToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value is bool b && b ? Visibility.Collapsed : Visibility.Visible;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+            => throw new NotImplementedException();
+    }
+
     public class StringToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

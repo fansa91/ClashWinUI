@@ -28,7 +28,7 @@ namespace ClashDotNetFramework.Pages
 
         private ClashConfigsResponse _clashConfigs;
         private bool _loading;
-        private string _currentTab = "General";
+        private string _currentTab = "Appearance";
 
         public SettingsPage()
         {
@@ -52,7 +52,7 @@ namespace ClashDotNetFramework.Pages
         }
 
         /// <summary>
-        /// 按 mihomo 官方配置段切换设置分组。只做 Visibility 切换，不销毁控件，
+        /// 按主题（外观 / 网络 / 系统 / 关于）切换设置分组，每组内部仍按 mihomo 官方配置段分卡。只做 Visibility 切换，不销毁控件，
         /// 因此所有回填、事件与 x:Bind 绑定都保持有效；切换后滚动位置回到顶部。
         /// </summary>
         private void SettingsTab_Click(object sender, RoutedEventArgs e)
@@ -68,16 +68,15 @@ namespace ClashDotNetFramework.Pages
                 return;
             _currentTab = tag;
 
-            TabGeneral.Visibility = tag == "General" ? Visibility.Visible : Visibility.Collapsed;
-            TabPorts.Visibility = tag == "Ports" ? Visibility.Visible : Visibility.Collapsed;
+            TabAppearance.Visibility = tag == "Appearance" ? Visibility.Visible : Visibility.Collapsed;
             TabNetwork.Visibility = tag == "Network" ? Visibility.Visible : Visibility.Collapsed;
             TabSystem.Visibility = tag == "System" ? Visibility.Visible : Visibility.Collapsed;
-            TabAdvanced.Visibility = tag == "Advanced" ? Visibility.Visible : Visibility.Collapsed;
+            TabAbout.Visibility = tag == "About" ? Visibility.Visible : Visibility.Collapsed;
 
             Application.Current.Resources.TryGetValue("AccentFillColorDefaultBrush", out var accentObj);
             var accentBrush = accentObj as Brush;
             var transparent = new SolidColorBrush(Windows.UI.Color.FromArgb(0, 0, 0, 0));
-            var buttons = new[] { TabGeneralButton, TabPortsButton, TabNetworkButton, TabSystemButton, TabAdvancedButton };
+            var buttons = new[] { TabAppearanceButton, TabNetworkButton, TabSystemButton, TabAboutButton };
             foreach (var button in buttons)
             {
                 bool selected = string.Equals(button.Tag as string, tag, StringComparison.Ordinal);

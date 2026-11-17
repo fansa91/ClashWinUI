@@ -57,6 +57,27 @@ namespace ClashDotNetFramework.Pages
             RefreshFilterButtonSelection();
         }
 
+        /// <summary>上次应用的布局状态，避免同一宽度下重复切换。</summary>
+        private string _layoutState;
+
+        /// <summary>
+        /// 双栏在窄内容区会挤成两列各 300px，切换单栏堆叠。
+        /// 用内容区实测宽度判断：导航折叠会让内容区突然宽出约 180px。
+        /// </summary>
+        private void RootGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double width = e.NewSize.Width;
+            if (width <= 0)
+                return;
+
+            string state = width >= 760 ? "WideProxies" : "NarrowProxies";
+            if (state == _layoutState)
+                return;
+
+            _layoutState = state;
+            VisualStateManager.GoToState(this, state, false);
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (Global.Refresh)
@@ -272,7 +293,7 @@ namespace ClashDotNetFramework.Pages
             }
 
             _visibleGroupCount = _groups.Count;
-            GroupCountText.Text = string.Format(Loc.NodesCount, _visibleGroupCount);
+            GroupCountText.Text = string.Format(Loc.GroupCountFormat, _visibleGroupCount);
             GroupBadgeText.Text = _visibleGroupCount.ToString();
 
             // 保持选中组在过滤后仍可见
@@ -469,13 +490,18 @@ namespace ClashDotNetFramework.Pages
                 SelectedGroupTypeBadge.Background = _selectedGroup.TypeBackground;
                 SelectedGroupTypeText.Foreground = _selectedGroup.TypeBrush;
             }
+
+            // 分段按钮与筛选按钮的选中底色是代码写入的 Brush 实例，
+            // 换主题后不会自动重解析，必须重新取一次当前调色板的强调色。
+            RefreshModeButtonSelection();
+            RefreshFilterButtonSelection();
         }
 
         /// <summary>语言切换后刷新代码写入的文案。</summary>
         public void RefreshLocalizedText()
         {
             if (GroupCountText != null)
-                GroupCountText.Text = string.Format(Loc.NodesCount, _visibleGroupCount);
+                GroupCountText.Text = string.Format(Loc.GroupCountFormat, _visibleGroupCount);
             foreach (var group in _allGroups)
                 group.RefreshLocalized();
             if (_selectedGroup != null && SelectedGroupSummaryText != null)
