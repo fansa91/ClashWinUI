@@ -39,6 +39,11 @@ namespace ClashDotNetFramework.Utils
 
         #region 强类型字符串
 
+        // 侧栏分组标题（按用途把 8 个页面分成三段）
+        public string NavGroupRuntime => T(nameof(NavGroupRuntime));
+        public string NavGroupTraffic => T(nameof(NavGroupTraffic));
+        public string NavGroupManage => T(nameof(NavGroupManage));
+
         public string Overview => T(nameof(Overview));
         public string Proxies => T(nameof(Proxies));
         public string Profiles => T(nameof(Profiles));
@@ -310,6 +315,9 @@ namespace ClashDotNetFramework.Utils
 
         private static readonly Dictionary<string, string> EnglishStrings = new()
         {
+            ["NavGroupRuntime"] = "Runtime",
+            ["NavGroupTraffic"] = "Traffic",
+            ["NavGroupManage"] = "Manage",
             ["Overview"] = "Overview",
             ["Proxies"] = "Proxies",
             ["Profiles"] = "Profiles",
@@ -571,6 +579,9 @@ namespace ClashDotNetFramework.Utils
 
         private static readonly Dictionary<string, string> ChineseStrings = new()
         {
+            ["NavGroupRuntime"] = "运行",
+            ["NavGroupTraffic"] = "流量",
+            ["NavGroupManage"] = "管理",
             ["Overview"] = "概览",
             ["Proxies"] = "代理",
             ["Profiles"] = "配置",
@@ -832,6 +843,9 @@ namespace ClashDotNetFramework.Utils
 
         private static readonly Dictionary<string, string> JapaneseStrings = new()
         {
+            ["NavGroupRuntime"] = "実行",
+            ["NavGroupTraffic"] = "トラフィック",
+            ["NavGroupManage"] = "管理",
             ["Overview"] = "概要",
             ["Proxies"] = "プロキシ",
             ["Profiles"] = "プロファイル",

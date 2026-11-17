@@ -32,8 +32,19 @@ namespace ClashDotNetFramework
         {
             InitializeComponent();
 
-            // Windows 11 原生材质 + 沉浸式标题栏
-            SystemBackdrop = new MicaBackdrop();
+            // Windows 11 原生材质 + 沉浸式标题栏；Mica 不可用时退到亚克力，
+            // 两者都不支持（如部分 Win10 版本）则保留系统默认底色。
+            try
+            {
+                if (Microsoft.UI.Composition.SystemBackdrops.MicaController.IsSupported())
+                    SystemBackdrop = new MicaBackdrop();
+                else if (Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController.IsSupported())
+                    SystemBackdrop = new DesktopAcrylicBackdrop();
+            }
+            catch
+            {
+            }
+
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(NavView);
 
@@ -45,7 +56,9 @@ namespace ClashDotNetFramework
             Global.Pages.Init();
             InitClash();
 
-            NavView.SelectedItem = NavView.MenuItems[0];
+            // 菜单里夹着分组标题（NavigationViewItemHeader，不是 NavigationViewItem），
+            // 不能按索引取第一项，否则会选中一个标题、且不触发页面导航。
+            NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().FirstOrDefault();
 
             Task.Run(() => UpdateChecker.Check(false));
 
@@ -63,9 +76,50 @@ namespace ClashDotNetFramework
             Global.IsDarkTheme = dark;
             RootGrid.RequestedTheme = dark ? ElementTheme.Dark : ElementTheme.Light;
 
+            // 标题栏按钮不跟随 RequestedTheme（它绘制在窗口边框层），颜色需要手动同步
+            ApplyTitleBarTheme();
+
             // 语义色由代码算出来的控件（延迟徽章、协议标签、图表画笔）不走 ThemeResource，
             // 需要主动通知重算。
             Global.Pages?.RefreshSemanticColors();
+        }
+
+        /// <summary>
+        /// 让系统绘制的窗口按钮与 Mica 背景、主题文字色协调。
+        /// 逐个属性 try：不同 Windows 版本支持度不一致，某一个不支持不应影响其余。
+        /// </summary>
+        private void ApplyTitleBarTheme()
+        {
+            try
+            {
+                var titleBar = AppWindow.TitleBar;
+                if (titleBar == null)
+                    return;
+
+                Color primary = ThemeManager.GetColor("TextPrimaryBrush");
+                Color transparent = Color.FromArgb(0x00, 0x00, 0x00, 0x00);
+                Color hover = Color.FromArgb(0x1A, primary.R, primary.G, primary.B);
+                Color pressed = Color.FromArgb(0x33, primary.R, primary.G, primary.B);
+                Color inactive = Color.FromArgb(0x99, primary.R, primary.G, primary.B);
+
+                void TrySet(Action action)
+                {
+                    try { action(); } catch { }
+                }
+
+                TrySet(() => titleBar.ButtonBackgroundColor = transparent);
+                TrySet(() => titleBar.ButtonInactiveBackgroundColor = transparent);
+                TrySet(() => titleBar.ButtonForegroundColor = primary);
+                TrySet(() => titleBar.ButtonInactiveForegroundColor = inactive);
+                TrySet(() => titleBar.ButtonHoverBackgroundColor = hover);
+                TrySet(() => titleBar.ButtonHoverForegroundColor = primary);
+                TrySet(() => titleBar.ButtonPressedBackgroundColor = pressed);
+                TrySet(() => titleBar.ButtonPressedForegroundColor = primary);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[TitleBar] 配色同步失败: {ex.Message}");
+            }
         }
 
         public void InitEvent()

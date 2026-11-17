@@ -7,13 +7,13 @@
     <Grid x:Name="RootGrid">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WindowSizeStates">
-                <!-- 宽窗口：完整导航窗格 -->
+                <!-- 宽窗口：完整导航窗格（图标 + 文字 + 分组标题） -->
                 <VisualState x:Name="WideWindowState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="1008" />
+                        <AdaptiveTrigger MinWindowWidth="968" />
                     </VisualState.StateTriggers>
                 </VisualState>
-                <!-- 窄窗口：折叠为紧凑图标模式 -->
+                <!-- 窄窗口：折叠为紧凑图标栏，顶部汉堡按钮可临时展开 -->
                 <VisualState x:Name="NarrowWindowState">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0" />
@@ -31,7 +31,7 @@
                         IsSettingsVisible="False"
                         IsPaneOpen="True"
                         IsTitleBarAutoPaddingEnabled="True"
-                        OpenPaneLength="240"
+                        OpenPaneLength="224"
                         CompactPaneLength="48"
                         Background="Transparent"
                         SelectionChanged="NavView_SelectionChanged">
@@ -44,9 +44,9 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Border Width="26"
-                            Height="26"
-                            CornerRadius="6"
+                    <Border Width="28"
+                            Height="28"
+                            CornerRadius="8"
                             VerticalAlignment="Center"
                             Background="{ThemeResource BrandPrimaryBrush}">
                         <FontIcon Glyph="&#xE774;"
@@ -58,14 +58,18 @@
                     <TextBlock x:Name="AppTitleText"
                                Grid.Column="1"
                                VerticalAlignment="Center"
-                               Style="{StaticResource BodyStrongTextBlockStyle}"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource TextPrimaryBrush}"
                                Text="Clash .NET Framework"
                                TextTrimming="CharacterEllipsis" />
                 </Grid>
             </NavigationView.PaneHeader>
 
-            <!-- ==================== 导航菜单（按使用频率排序） ==================== -->
+            <!-- ==================== 导航菜单（按用途分三段） ==================== -->
             <NavigationView.MenuItems>
+                <NavigationViewItemHeader Content="{x:Bind Loc.NavGroupRuntime, Mode=OneWay}" />
+
                 <NavigationViewItem Tag="Overview" Content="{x:Bind Loc.Overview, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE80F;" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
@@ -76,11 +80,9 @@
                         <FontIcon Glyph="&#xE774;" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Tag="Profiles" Content="{x:Bind Loc.Profiles, Mode=OneWay}">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8A5;" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+
+                <NavigationViewItemHeader Content="{x:Bind Loc.NavGroupTraffic, Mode=OneWay}" />
+
                 <NavigationViewItem Tag="Connections" Content="{x:Bind Loc.Connections, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE71B;" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
@@ -94,6 +96,14 @@
                 <NavigationViewItem Tag="Logs" Content="{x:Bind Loc.Logs, Mode=OneWay}">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8BD;" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItemHeader Content="{x:Bind Loc.NavGroupManage, Mode=OneWay}" />
+
+                <NavigationViewItem Tag="Profiles" Content="{x:Bind Loc.Profiles, Mode=OneWay}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8A5;" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Tag="Support" Content="{x:Bind Loc.Support, Mode=OneWay}">
@@ -110,7 +120,7 @@
                     <!-- 实时上下行流量（等宽字体，避免数字跳动） -->
                     <Border Style="{StaticResource SubtleCardBorderStyle}"
                             Padding="10,8"
-                            CornerRadius="6">
+                            CornerRadius="{StaticResource ControlCornerRadius}">
                         <StackPanel Spacing="6">
                             <Grid ColumnSpacing="8">
                                 <Grid.ColumnDefinitions>
@@ -125,10 +135,8 @@
                                 <TextBlock x:Name="UploadSpeed"
                                            Grid.Column="1"
                                            Text="0.00 B/s"
-                                           FontFamily="Cascadia Mono, Consolas"
-                                           FontSize="12"
-                                           HorizontalAlignment="Right"
-                                           TextTrimming="CharacterEllipsis" />
+                                           Style="{StaticResource MonospaceTextBlockStyle}"
+                                           HorizontalAlignment="Right" />
                             </Grid>
 
                             <Grid ColumnSpacing="8">
@@ -144,10 +152,8 @@
                                 <TextBlock x:Name="DownloadSpeed"
                                            Grid.Column="1"
                                            Text="0.00 B/s"
-                                           FontFamily="Cascadia Mono, Consolas"
-                                           FontSize="12"
-                                           HorizontalAlignment="Right"
-                                           TextTrimming="CharacterEllipsis" />
+                                           Style="{StaticResource MonospaceTextBlockStyle}"
+                                           HorizontalAlignment="Right" />
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -158,20 +164,21 @@
                         <TextBlock x:Name="StatusText"
                                    VerticalAlignment="Center"
                                    FontSize="12"
+                                   Foreground="{ThemeResource TextSecondaryBrush}"
                                    Text="Disconnected"
                                    TextTrimming="CharacterEllipsis" />
                     </StackPanel>
 
                     <!-- 运行时长 -->
                     <TextBlock x:Name="ConnectionTime"
-                               FontFamily="Cascadia Mono, Consolas"
-                               FontSize="12"
+                               Style="{StaticResource MonospaceTextBlockStyle}"
                                Padding="2,0"
-                               Text="00 : 00 : 00"
-                               TextTrimming="CharacterEllipsis" />
+                               Foreground="{ThemeResource TextSecondaryBrush}"
+                               Text="00 : 00 : 00" />
 
                     <TextBlock x:Name="CoreVersionText"
                                Style="{StaticResource SecondaryCaptionTextBlockStyle}"
+                               FontSize="{StaticResource FontSizeMicro}"
                                Text="Core Version: Unknown"
                                TextWrapping="Wrap"
                                Padding="2,0" />
@@ -190,7 +197,7 @@
                         <!-- 选中态背景 -->
                         <Border x:Name="SettingsFooterHighlight"
                                 Grid.ColumnSpan="2"
-                                CornerRadius="4"
+                                CornerRadius="{StaticResource ControlCornerRadius}"
                                 Background="{ThemeResource BrandSubtleBrush}"
                                 Visibility="Collapsed" />
 
